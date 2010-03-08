@@ -3,6 +3,7 @@ from cocos.director import director
 from cocos.menu import Menu, MenuItem, CENTER, zoom_in, zoom_out
 
 class GameMenu(Menu):
+    """Initial game menu"""
     def __init__(self, start):
         super(GameMenu, self).__init__("Veronica Defender")
 
@@ -21,8 +22,10 @@ class GameMenu(Menu):
         self.create_menu(items, zoom_in(), zoom_out())
 
     def on_new_game(self):
+        """When a new game is open"""
         self.start()
 
     def on_quit(self):
+        """When the game is exited"""
         director.pop()
 
