@@ -62,7 +62,7 @@ class TdLayer(cocos.layer.Layer):
     is_event_handler = True
     def __init__(self):
         super(TdLayer, self).__init__()
-        
+
         self.fx_layer = cocos.layer.Layer()
         self.sights_layer = cocos.layer.Layer()
         self.towers_layer = cocos.layer.Layer()
@@ -80,7 +80,7 @@ class TdLayer(cocos.layer.Layer):
 
         # one HQ:
         self.hq = HQ(self, const.GRID_LEN_X / 2, const.GRID_LEN_Y - 2)
-        
+
         # one resource manager
         self.resources = ResourceManager(self, INITIAL_BALANCE)
 
@@ -101,7 +101,7 @@ class TdLayer(cocos.layer.Layer):
         self.impacts = []
         self.schedule(self.update_world)
         self.schedule_interval(self.enemy_spawner, 1)
-      
+
         self.level_loader()
 
 
@@ -160,6 +160,7 @@ class TdLayer(cocos.layer.Layer):
                 self.calculate_paths()
 
     def on_key_press(self, k, m):
+        """When the user press a key"""
         if k == key.ESCAPE:
             director.pop()
 
@@ -177,7 +178,7 @@ class TdLayer(cocos.layer.Layer):
     def level_loader(self, level='1'):
         """Load a level from a template"""
         self.level = levels.level[level]
-        
+
         self.level_enemies = []
         for wave in self.level['enemies']:
             self.wave_enemies = []
@@ -259,6 +260,7 @@ class ResourceManager(object):
         self.update_counter()
 
 def start_game():
+    """Prepare and start the game"""
     # arrange layers:
     bg_layer = cocos.layer.ColorLayer(255, 255, 255, 255)
     grid_layer = GridLayer()
