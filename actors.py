@@ -104,6 +104,7 @@ class Tower(MapObject):
     shot_class = Shot
     sprite_file = 'Tower.png'
     size = 2
+
     def __init__(self, world, grid_x, grid_y, sight=100):
         super(Tower, self).__init__(world, grid_x, grid_y)
         self.sight = sight
@@ -166,9 +167,11 @@ class Tower(MapObject):
         return math.degrees(ang_radians)
 
     def aim_at(self, enemy):
+        """Aim the cannon to an enemy"""
         self.sprite.do(RotateTo(self.get_angle_to(enemy), 0.1))
 
     def check_enemies(self):
+        """List the enemies at sight"""
         enemies_at_sight = []
         # check for enemies that enter in the tower sight:
         for enemy in self.world.enemies:
@@ -183,6 +186,7 @@ class HQ(MapObject):
     """Head Quarters to defend"""
     size = 2
     sprite_file = 'hq.png'
+
     def __init__(self, world, grid_x, grid_y):
         super(HQ, self).__init__(world, grid_x, grid_y)
         self.life = 10
@@ -210,21 +214,22 @@ class HQ(MapObject):
 class Impact(fx_parent.Fx):
     """Impact of a shot"""
     sprite_file = 'impact.png'
+
     def __init__(self,  enemy):
         super(Impact, self).__init__(enemy)
-        self.enemy = enemy        
+        self.enemy = enemy
         self.world.impacts.append(self)
-          
+
     def update(self):
         """Impact logic on each frame"""
         if self.enemy.lives:
             self.sprite.x = self.enemy.sprite.x
             self.sprite.y = self.enemy.sprite.y
-        
+
     def remove(self):
-        """Remove the impact from the world"""        
+        """Remove the impact from the world"""
         self.world.impacts.remove(self)
-        super(Impact, self).remove() 
+        super(Impact, self).remove()
 
 class Enemy(MapObject):
     """Kill them!!"""
@@ -264,12 +269,12 @@ class Enemy(MapObject):
             self.sprite.y < 0):
             self.remove()
             return
-            
+
         if self.arrived():
             self.remove()
             self.world.hq.take_damage(self.damage)
             return
-            
+
     def take_damage(self, damage):
         """Take damage from a shot"""
         self.lives -= damage
