@@ -211,6 +211,7 @@ class TdLayer(cocos.layer.Layer):
         self.schedule(self.exit)
 
     def exit(self, dt):
+        """Exit the game"""
         if time.time() - self.game_over_t > 3:
             director.pop()
 
