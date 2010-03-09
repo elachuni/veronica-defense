@@ -4,11 +4,25 @@
 import os, sys, time
 import random
 
-import cocos
+# magia de import
+sys.path.insert(0, 
+    os.path.join(os.path.dirname(os.path.realpath(__file__)), 'deps'))
+
+# si las librerias no existen no mostrar un error demasiado extraño
+try:
+    import cocos
+    import pyglet
+except ImportError:
+    print """Verónica Defense
+Necesitás instalar las librerías cocos2d y pyglet para jugar Veronica Defense.
+Para ello hay que ejecutar el script 'install-deps.sh' o descargarlas desde:"""
+    print "  http://cocos2d.org/"
+    print "  http://pyglet.org/"
+    sys.exit(1)
+
 from cocos.director import director
 from cocos.scene import Scene
 from cocos.layer import MultiplexLayer
-import pyglet
 from pyglet.window import key
 
 pyglet.resource.path.append("images")
