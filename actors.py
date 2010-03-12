@@ -250,7 +250,8 @@ class Enemy(MapObject):
 
         # start moving
         self.next_move()
-
+        self.lifebar = fx_parent.LifeBar(self)
+    
     def layer(self):
         """Layer where the enemies are placed"""
         return self.world.enemies_layer
@@ -295,6 +296,7 @@ class Enemy(MapObject):
 
     def remove(self):
         """Remove the enemy from the game"""
+        self.lifebar.remove()
         super(Enemy, self).remove()
         self.world.enemies.remove(self)
 
