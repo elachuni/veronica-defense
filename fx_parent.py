@@ -35,37 +35,46 @@ class Fx(object):
 
 class LifeBar(cocos.cocosnode.CocosNode):
     
+    max_width = 30 
+    back_color = (0,0,0,100)
+    top_color = (255, 0, 0, 100)
+    container_vertex = [(-2, -2, 0), (max_width+2,-2, 0), (max_width+2, 10, 0), (-2, 10, 0 )]
+    
     def __init__(self, target):
         super(LifeBar, self).__init__()
         self.target = target
         self.world = self.target.world
         self.max_length = self.target.lives
-        self.x = self.target.sprite.x
-        self.y = self.target.sprite.y
-        self.max_width = 30
-        self.bar_vertex = [(2, 2, 0), (18, 2, 0), (18, 6, 0), (2, 6, 0 )]
         self.world.fx_layer.add(self)
+        self.x_offset = -(self.max_width / 2) 
+        self.y_offset = self.target.sprite.image.height / 2 + 5
 
     def draw(self):
         self.update()    
-        glPushMatrix()
-        glBegin(GL_QUADS)
-        glColor4ub(255, 0, 0, 255)
-        for v in self.container_vertex:
-            vertex = (v[0]+self.x, v[1]+self.y, v[2])
-            glVertex3f(*vertex)
-        glEnd()
-        glPopMatrix()
-    
+        self.gl_draw([(self.container_vertex, self.back_color), (self.bar_vertex, self.top_color)])
+        
+
     def remove(self):
         self.world.fx_layer.remove(self)
 
     def update(self):
         self.width = (self.target.lives*self.max_width)/self.max_length
-        self.x = self.target.sprite.x - 15
-        self.y = self.target.sprite.y + 10
-        self.container_vertex = [(0,0,0), (self.width, 0, 0), (self.width, 8, 0), (0,8,0)]
-    
+        self.x = self.target.sprite.x + self.x_offset
+        self.y = self.target.sprite.y + self.y_offset
+        self.bar_vertex = [(0,0,0), (self.width, 0, 0), (self.width, 8, 0), (0,8,0)]
+     
+    def gl_draw(self, vertexes):
+        glPushMatrix()
+        for draw in vertexes:
+            glBegin(GL_QUADS)
+            glColor4ub(*draw[1])
+            for v in draw[0]:
+                vertex = (v[0]+self.x, v[1]+self.y, v[2])
+                glVertex3f(*vertex)
+            glEnd()
+        glPopMatrix()
+        
+        
 
 
        
