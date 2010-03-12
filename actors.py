@@ -236,18 +236,18 @@ class Enemy(MapObject):
     size = 1
     sprite_file = 'enemy.png'
 
-    def __init__(self, world, grid_x, grid_y, lives=3, template=None):
+    def __init__(self, world, grid_x, grid_y, lives=3, rotate = True, template=None ):
         super(Enemy, self).__init__(world, grid_x, grid_y)
         self.lives = lives
         self.speed = 1.4
         self.world.enemies.append(self)
+        self.rotate = rotate
         self.template_loader(template)
         self.create_sprite()
         # add radio from sprite
         self.radio = self.sprite.width / 2
         self.reward = 1
         self.damage = 1
-
         # start moving
         self.next_move()
         self.lifebar = fx_parent.LifeBar(self)
@@ -311,14 +311,15 @@ class Enemy(MapObject):
         self.grid_x += d[0]
         self.grid_y += d[1]
         move = (d[0] * const.GRID, d[1] * const.GRID)
-        if d[0] == 1 and d[1] == 0:
-            self.sprite.do(RotateTo(00, 0.2))
-        elif d[0] == -1 and d[1] == 0:
-            self.sprite.do(RotateTo(180, 0.2))
-        elif d[0] == 0 and d[1] == 1:
-            self.sprite.do(RotateTo(-90, 0.2))
-        elif d[0] == 0 and d[1] == -1:
-            self.sprite.do(RotateTo(90, 0.2))
+        if self.rotate:
+            if d[0] == 1 and d[1] == 0:
+                self.sprite.do(RotateTo(00, 0.2))
+            elif d[0] == -1 and d[1] == 0:
+                self.sprite.do(RotateTo(180, 0.2))
+            elif d[0] == 0 and d[1] == 1:
+                self.sprite.do(RotateTo(-90, 0.2))
+            elif d[0] == 0 and d[1] == -1:
+                self.sprite.do(RotateTo(90, 0.2))
 
         self.sprite.do(MoveBy(move, 1/self.speed) +
                              CallFunc(self.next_move))
