@@ -34,7 +34,7 @@ class Fx(object):
         self.__class__.batch.add(self.sprite)
 
 class LifeBar(cocos.cocosnode.CocosNode):
-    
+    """Dinamic Lifebar, using gl primitives""" 
     max_width = 30 
     back_color = (0,0,0,100)
     top_color = (255, 0, 0, 100)
@@ -50,20 +50,24 @@ class LifeBar(cocos.cocosnode.CocosNode):
         self.y_offset = self.target.sprite.image.height / 2 + 5
 
     def draw(self):
+        """this is used by cocos, to draw te primitives"""
         self.update()    
         self.gl_draw([(self.container_vertex, self.back_color), (self.bar_vertex, self.top_color)])
         
 
     def remove(self):
+        """remove the lifebar from fx layer"""
         self.world.fx_layer.remove(self)
 
     def update(self):
+        """updates position and lives of the target, and re-define te vertex points"""
         self.width = (self.target.lives*self.max_width)/self.max_length
         self.x = self.target.sprite.x + self.x_offset
         self.y = self.target.sprite.y + self.y_offset
         self.bar_vertex = [(0,0,0), (self.width, 0, 0), (self.width, 8, 0), (0,8,0)]
      
     def gl_draw(self, vertexes):
+        """Takes a List of tuples like (vertexList, color) and draw them"""
         glPushMatrix()
         for draw in vertexes:
             glBegin(GL_QUADS)
