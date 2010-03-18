@@ -1,4 +1,4 @@
-#! -*- coding: utf8 -*-
+#! -*- coding: utf-8 -*-
 """Parent class for fx"""
 
 import cocos
@@ -38,7 +38,9 @@ class LifeBar(cocos.cocosnode.CocosNode):
     max_width = 30 
     back_color = (0,0,0,100)
     top_color = (255, 0, 0, 100)
-    container_vertex = [(-2, -2, 0), (max_width+2,-2, 0), (max_width+2, 10, 0), (-2, 10, 0 )]
+    back_height = 5
+    top_height = 3
+    container_vertex = [(-2, -2, 0), (max_width+2,-2, 0), (max_width+2, back_height, 0), (-2, back_height, 0 )]
     
     def __init__(self, target):
         super(LifeBar, self).__init__()
@@ -64,7 +66,7 @@ class LifeBar(cocos.cocosnode.CocosNode):
         self.width = (self.target.lives*self.max_width)/self.max_length
         self.x = self.target.sprite.x + self.x_offset
         self.y = self.target.sprite.y + self.y_offset
-        self.bar_vertex = [(0,0,0), (self.width, 0, 0), (self.width, 8, 0), (0,8,0)]
+        self.bar_vertex = [(0,0,0), (self.width, 0, 0), (self.width, self.top_height, 0), (0,self.top_height,0)]
      
     def gl_draw(self, vertexes):
         """Takes a List of tuples like (vertexList, color) and draw them"""

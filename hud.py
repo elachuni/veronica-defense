@@ -57,6 +57,7 @@ class TowerCreationLayer(cocos.layer.Layer):
         super(TowerCreationLayer, self).__init__()
         self.type = type
         self.sprite = cocos.sprite.Sprite(self.type.__name__+'.png')
+        self.sprite.scale = 0.5
         self.draging = (x,y)
         self.world = world
         self.menu = menu

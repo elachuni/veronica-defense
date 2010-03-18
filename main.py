@@ -24,6 +24,7 @@ from cocos.layer import MultiplexLayer
 from pyglet.window import key
 
 pyglet.resource.path.append("images")
+pyglet.resource.path.append(os.path.join("images", "orig"))
 pyglet.resource.reindex()
 
 import const

@@ -256,16 +256,20 @@ class PlayScene(cocos.scene.Scene):
     def __init__(self):
         super(PlayScene, self).__init__()
         bg_layer = cocos.layer.ColorLayer(255, 255, 255, 255)
-        grid_layer = GridLayer()
+#        grid_layer = GridLayer()
         td_layer = TdLayer()
         hud_layer = hud.HudLayer(td_layer)
 
-        background = cocos.sprite.Sprite('background.jpg')
-        background.x = (const.GRID_LEN_X / 2.0) * const.GRID
-        background.y = (const.GRID_LEN_Y / 2.0) * const.GRID
-        bg_layer.add(background, z=0)
+        # wall tile (120 x 120 px):
+        for i in range(0, const.WINDOW_W, 120):
+            for j in range(0, const.WINDOW_H, 120):
+                wall_tile = cocos.sprite.Sprite('wall.png')
+                wall_tile.x = wall_tile.image.width / 2 + i
+                wall_tile.y = wall_tile.image.height / 2 + j
+                bg_layer.add(wall_tile, z=0)
+            
         self.add(bg_layer, z=0)
-        self.add(grid_layer, z=1)
+#        self.add(grid_layer, z=1)
         self.add(td_layer, z=2)
         self.add(hud_layer, z=3)
 

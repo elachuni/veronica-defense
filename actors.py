@@ -41,7 +41,7 @@ class MapObject(object):
 
     def create_sprite(self):
         """Create the object's sprite"""
-        # we create a batch for this type of enemy
+        # we create a batch for this type of map object
         if not hasattr(self.__class__, 'batch'):
             self.__class__.batch = cocos.batch.BatchNode()
             self.layer().add(self.__class__.batch)
@@ -49,7 +49,7 @@ class MapObject(object):
         self.sprite = cocos.sprite.Sprite(self.sprite_file)
         self.sprite.x = (self.grid_x + self.size / 2.0) * const.GRID
         self.sprite.y = (self.grid_y + self.size / 2.0) * const.GRID
-        # we add the enemy sprite to the batch
+        # we add the sprite to the batch
         self.__class__.batch.add(self.sprite)
 
 
@@ -104,6 +104,7 @@ class Tower(MapObject):
     shot_class = Shot
     sprite_file = 'Tower.png'
     size = 2
+    adjust_y = -27
 
     def __init__(self, world, grid_x, grid_y, sight=100):
         super(Tower, self).__init__(world, grid_x, grid_y)
@@ -112,17 +113,28 @@ class Tower(MapObject):
 
         self.create_sprite()
         # the tower sprite:
-        self.sprite.rotation = -30
+        self.sprite.scale = 0.4
+
+        # adjust tower sprite rotation point:
+        self.sprite.transform_anchor = 0, self.adjust_y
 
         # a circle sprite to show the sight:
         self.sight_sprite = cocos.sprite.Sprite('circle.png')
         self.sight_sprite.x = self.sprite.x
-        self.sight_sprite.y = self.sprite.y
+        self.sight_sprite.y = self.sprite.y + self.adjust_y
         self.sight_sprite.scale = self.sight / 300.0
         self.sight_sprite.opacity = 90
         # TODO poner un self.world.sight_layer ?
         self.world.add(self.sight_sprite)
+
+        tower_base = cocos.sprite.Sprite('tower_base.png')
+        tower_base.scale = 0.5
+        tower_base.x = self.sprite.x
+        tower_base.y = self.sprite.y + self.adjust_y
+        self.world.add(tower_base)
+        
         self.last_shot = time.time()
+        
 
     def update(self):
         """Tower logic on each frame"""
@@ -238,12 +250,14 @@ class Enemy(MapObject):
 
     def __init__(self, world, grid_x, grid_y, lives=3, rotate = True, template=None ):
         super(Enemy, self).__init__(world, grid_x, grid_y)
+
         self.lives = lives
         self.speed = 1.4
         self.world.enemies.append(self)
         self.rotate = rotate
         self.template_loader(template)
         self.create_sprite()
+        self.sprite.scale = 0.5
         # add radio from sprite
         self.radio = self.sprite.width / 2
         self.reward = 1
