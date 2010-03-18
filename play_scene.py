@@ -7,6 +7,8 @@ import random
 import pyglet
 import cocos
 
+from pyglet.window import key
+
 import const
 
 import levels
