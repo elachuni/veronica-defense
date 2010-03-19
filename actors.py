@@ -5,7 +5,7 @@ import datetime
 import time
 
 import cocos
-from cocos.actions import RotateTo, MoveBy, CallFunc, FadeOut, ScaleTo
+from cocos.actions import RotateTo, MoveBy, CallFunc, FadeOut, ScaleTo, FadeTo
 from cocos.director import director
 from cocos.menu import CENTER
 import const
@@ -198,10 +198,11 @@ class HQ(MapObject):
     """Head Quarters to defend"""
     size = 2
     sprite_file = 'hq.png'
+    initial_life = 10
 
     def __init__(self, world, grid_x, grid_y):
         super(HQ, self).__init__(world, grid_x, grid_y)
-        self.life = 10
+        self.life = self.initial_life
         self.create_sprite()
 
         # life counter on screen
@@ -216,6 +217,7 @@ class HQ(MapObject):
         """Take damage from an enemy"""
         self.life -= damage
         self.update_counter()
+        self.update_sprite()
         if self.life <= 0:
             self.world.schedule_interval(self.world.game_over, 0)
 
@@ -223,6 +225,12 @@ class HQ(MapObject):
         """Update on-screen life counter"""
         self.life_counter.element.text = "vidas: %s" % self.life
 
+    def update_sprite(self):
+        new_opacity = 55 + 200 * self.life / self.initial_life
+        new_scale = 0.1 + 0.9 * self.life / self.initial_life
+        self.sprite.do(FadeTo(new_opacity, 0.2))
+        self.sprite.do(ScaleTo(new_scale, 0.2))
+        
 class Impact(fx_parent.Fx):
     """Impact of a shot"""
     sprite_file = 'impact.png'
