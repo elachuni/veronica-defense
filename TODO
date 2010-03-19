@@ -1,0 +1,15 @@
+* Mejorar perfomance
+* Refactorizar todo!
+* Manejo de puntos/plata
+  * Matar enemigos te da puntaje
+  * Enemigos que llegan al HQ te restan puntaje
+* Detectar que los enemigos llegaron al HQ
+* Manejo de niveles
+  * Agregar tipos de torres/disparos
+  * Agregar tipos de  enemigos
+  * Agregar escenografía
+* HUD
+  * Capa para mostrar notificaciones al player
+  * Mostrar puntaje
+    * Mostrar cuando aumenta y cuando disminuye de alguna forma bonita
+  * Mostrar torres disponibles para plantar (hoy en día hay solo una) y costo

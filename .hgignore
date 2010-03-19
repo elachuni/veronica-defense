@@ -1,0 +1,10 @@
+^deps$
+
+syntax: glob
+*~
+*.pyc
+.ropeproject
+*.swp
+*.orig
+*.swo
+
