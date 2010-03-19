@@ -8,6 +8,7 @@ import time
 
 import pyglet
 import cocos
+from cocos.director import director
 
 from pyglet.window import key
 
