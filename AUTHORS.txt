@@ -7,8 +7,8 @@ lucas
 malev
 manu
 Manuel Muradas <mmuradas@dieresys.com.ar>
-manuq
+Manuel Quiñones - manuq <manuel.por.aca@gmail.com>
 Pablo Mouzo <pablomouzo@gmail.com>
 Alejandro Santos <alejolp@alejolp.com>
-Manuel Quiñones <manuel.por.aca@gmail.com>
+ 
 
