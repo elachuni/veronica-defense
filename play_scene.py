@@ -4,6 +4,7 @@ The in-game scene
 """
 
 import random
+import time
 import pyglet
 import cocos
 
