@@ -36,8 +36,8 @@ if __name__ == "__main__":
     # set globals:
     const.WINDOW_W, const.WINDOW_H = director.get_window_size()
     #set_window_size(WINDOW_W, WINDOW_H)
-    const.GRID_LEN_X = len(range(0, const.WINDOW_W, const.GRID))
-    const.GRID_LEN_Y = len(range(0, const.WINDOW_H, const.GRID))
+    const.GRID_LEN_X = const.WINDOW_W / const.GRID
+    const.GRID_LEN_Y = const.WINDOW_H / const.GRID
 
     # desconectado temporariamente
     #main_menu = Scene(MultiplexLayer(GameMenu(start_game)))

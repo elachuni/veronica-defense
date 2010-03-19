@@ -74,7 +74,7 @@ class TowerCreationLayer(cocos.layer.Layer):
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.draging = director.get_virtual_coordinates(x,y)
-        valid_zone = self.world.terrain.is_space_free(self.draging)
+        valid_zone = self.world.is_space_free(self.draging)
         if valid_zone:
             self.valid_layer.visible = True
             self.invalid_layer.visible = False
@@ -95,7 +95,15 @@ class TowerCreationLayer(cocos.layer.Layer):
 if __name__ == "__main__":
     pyglet.font.add_directory('.')
 
+    class DummyWorld(cocos.layer.Layer):
+        def __init__(self):
+            super(DummyWorld, self).__init__()
+        def is_space_free(self, pos):
+            return True
+        def add_tower_from_menu(self, *args, **kwargs):
+            pass
+
     director.init( resizable=False)
     bg = cocos.layer.ColorLayer(255,255,255,255)
-    ter = actor.Terrain()
-    director.run( Scene( bg, HudLayer(ter) ) )
+    world = DummyWorld()
+    director.run(Scene(bg, HudLayer(world)))

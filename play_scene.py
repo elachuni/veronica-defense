@@ -4,6 +4,8 @@ The in-game scene
 """
 
 import random
+import time
+
 import pyglet
 import cocos
 
@@ -62,10 +64,7 @@ class TdLayer(cocos.layer.Layer):
         self.towers_layer = cocos.layer.Layer()
         self.enemies_layer = cocos.layer.Layer()
         self.shots_layer = cocos.layer.Layer()
-
-        self.terrain = Terrain()
-
-
+        
         self.add(self.sights_layer, z = 0)
         self.add(self.towers_layer, z = 2)
         self.add(self.enemies_layer, z = 1)
@@ -78,17 +77,17 @@ class TdLayer(cocos.layer.Layer):
         # one resource manager
         self.resources = ResourceManager(self, INITIAL_BALANCE)
 
-        # two towers:
+        # some towers:
         tower_init_data = ((const.GRID_LEN_X/2, 2),
                       (const.GRID_LEN_X/2, 6),
                       (const.GRID_LEN_X/2, 10),)
         self.towers = {}
-        for x,y in tower_init_data:
+        for x, y in tower_init_data:
             self.towers[(x, y)] = Tower(self, x, y)
-
+        
         # Everything collideable on the map, calculate paths
         self.calculate_paths()
-
+        
         self.enemies = []
         #still no shots
         self.shots = []
@@ -97,8 +96,7 @@ class TdLayer(cocos.layer.Layer):
         self.schedule_interval(self.enemy_spawner, 1)
 
         self.level_loader()
-
-
+    
     def calculate_paths(self):
         """Calculate the paths to the HG (for the enemies)"""
         self.paths = [[None] * const.GRID_LEN_X
@@ -122,17 +120,18 @@ class TdLayer(cocos.layer.Layer):
                 if self.paths[newy][newx] is None:
                     self.paths[newy][newx] = d
                     q.append((newx, newy))
-
+    
     def update_world(self, dt):
         """Update the game state"""
         for tower in self.towers.values():
             tower.update()
-
+        
         for enemy in self.enemies:
             enemy.update()
-
+        
         for shot in self.shots:
             shot.update()
+        
         for impact in self.impacts:
             impact.update()
 
@@ -209,8 +208,6 @@ class TdLayer(cocos.layer.Layer):
         if time.time() - self.game_over_t > 3:
             director.pop()
 
-class Terrain(object):
-    """FIXME do we need this?"""
     def is_space_free(self, pos):
         return True
 
