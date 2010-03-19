@@ -23,8 +23,9 @@ from cocos.director import director
 from cocos.layer import MultiplexLayer
 from pyglet.window import key
 
+# pyglet wants linux style paths, dont use OS specific slashes
 pyglet.resource.path.append("images")
-pyglet.resource.path.append(os.path.join("images", "orig"))
+pyglet.resource.path.append("images/orig")
 pyglet.resource.reindex()
 
 import const
