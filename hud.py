@@ -14,6 +14,7 @@ from cocos.menu import Menu, ImageMenuItem, RIGHT, CENTER, \
 import actors
 import const
 from mapa import get_grid_from_point
+from config import ADD_TOWER
 
 pyglet.resource.path.append("images")
 pyglet.resource.reindex()
@@ -41,6 +42,9 @@ class HudLayer(Menu):
         pass
 
     def on_Tower_callback(self):
+        if not self.world.resources.can_i_spend(ADD_TOWER):
+            return
+        
         if self.selected == actors.Tower or self.mouse_x is None:
             return
         self.drag_object = TowerCreationLayer(actors.Tower, self, self.world, self.mouse_x, self.mouse_y)

@@ -167,10 +167,6 @@ class WorldLayer(cocos.layer.Layer):
                                         # change in the future
         self.resources.update_counter()
         self.calculate_paths()
-        
-        if not self.resources.can_i_spend(ADD_TOWER):
-            # TODO: deactivate menu and cancel object dragging
-            pass
     
     def level_loader(self, level='1'):
         """Load a level from a template"""
