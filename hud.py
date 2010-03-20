@@ -7,10 +7,9 @@ from pyglet.gl import *
 from pyglet import font
 
 import cocos
-from cocos.director import *
-from cocos.menu import *
-from cocos.scene import *
-from cocos.layer import *
+from cocos.director import director
+from cocos.menu import Menu, ImageMenuItem, RIGHT, CENTER, \
+     zoom_in, zoom_out
 
 import actors
 import const
@@ -113,4 +112,4 @@ if __name__ == "__main__":
     director.init( resizable=False)
     bg = cocos.layer.ColorLayer(255,255,255,255)
     world = DummyWorld()
-    director.run(Scene(bg, HudLayer(world)))
+    director.run(cocos.scene.Scene(bg, HudLayer(world)))
