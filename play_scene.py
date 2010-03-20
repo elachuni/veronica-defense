@@ -60,8 +60,9 @@ class WorldLayer(cocos.layer.Layer):
     is_event_handler = True
     def __init__(self):
         super(WorldLayer, self).__init__()
-        
+
         self.mapa = Mapa()
+        self.active_tower = None
         
         self.sights_layer = cocos.layer.Layer()
         self.enemies_layer = cocos.layer.Layer()
@@ -153,8 +154,10 @@ class WorldLayer(cocos.layer.Layer):
                 self.calculate_paths()
                 
         elif buttons == pyglet.window.mouse.LEFT:
-            # TODO select tower:
-            pass
+            # select tower:
+            obj = self.mapa.get_at(grid_pos)
+            if obj is not None and obj.__class__ == Tower:
+                self.activate_tower(obj)
     
     def on_key_press(self, k, m):
         """When the user press a key"""
@@ -173,6 +176,12 @@ class WorldLayer(cocos.layer.Layer):
                                         # change in the future
         self.resources.update_counter()
         self.calculate_paths()
+
+    def activate_tower(self, tower):
+        if self.active_tower is not None:
+            self.active_tower.deactivate()
+        tower.activate()
+        self.active_tower = tower
     
     def level_loader(self, level='1'):
         """Load a level from a template"""

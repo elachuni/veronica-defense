@@ -5,7 +5,8 @@ import datetime
 import time
 
 import cocos
-from cocos.actions import RotateTo, MoveBy, CallFunc, FadeOut, ScaleTo, FadeTo
+from cocos.actions import RotateTo, MoveBy, CallFunc, FadeOut, FadeIn, \
+     ScaleTo, FadeTo
 from cocos.director import director
 from cocos.menu import CENTER
 import const
@@ -124,6 +125,7 @@ class Tower(MapObject):
         self.sight_sprite.y = self.sprite.y + self.adjust_y
         self.sight_sprite.scale = self.sight / 300.0
         self.sight_sprite.opacity = 90
+        self.sight_sprite.visible = False
         # TODO poner un self.world.sight_layer ?
         self.world.add(self.sight_sprite)
         
@@ -166,6 +168,12 @@ class Tower(MapObject):
     def layer(self):
         """Layer where towers are placed"""
         return self.world.towers_layer
+
+    def activate(self):
+        self.sight_sprite.visible = True
+
+    def deactivate(self):
+        self.sight_sprite.visible = False
 
     def choose_enemy(self, enemies_at_sight):
         """Chose an enemy from the enemies at sight to shot at"""
