@@ -1,8 +1,4 @@
 
-"""
-Mapa that stores the grid positions of the objects
-"""
-
 import cocos
 from cocos.director import director
 import pyglet
@@ -15,22 +11,36 @@ pyglet.resource.reindex()
 
 
 class Mapa(object):
+    """
+    Store the grid positions of the objects.
+    """
     def __init__(self):
-        # stores the grid positions for every object in the mapa:
+        
+        # grid position -> map object:
         self._mapa = {}
 
     def add(self, map_object):
+        """
+        Add map_object to the map, filling the grid positions.
+        """
         for i in range(map_object.size):
             for j in range(map_object.size):
                 grid_pos = map_object.grid_x+i, map_object.grid_y+j
                 self._mapa[grid_pos] = map_object
 
     def is_empty_at(self, grid_pos):
+        """
+        Return True if the map is empty at grid_pos position.
+        """
         return grid_pos not in self._mapa
 
-    def can_fit_at(self, grid_pos, size):
-        for i in range(size):
-            for j in range(size):
+    def can_fit_at(self, grid_pos, klass):
+        """
+        Return True if a map object of class klass can fit at grid_pos
+        position,
+        """
+        for i in range(klass.size):
+            for j in range(klass.size):
                 test_grid_pos = grid_pos[0]+i, grid_pos[1]+j
                 if not self.is_empty_at(test_grid_pos):
                     return False
@@ -42,6 +52,7 @@ def get_grid_from_point(x, y):
 
 
 if __name__ == "__main__":
+    # Test mapa:
     from play_scene import GridLayer
     from actors import Tower
     
@@ -56,31 +67,32 @@ if __name__ == "__main__":
             self.add(self.towers_layer)
 
             t = Tower(self, 5, 5)
+            self.mapa.add(t)
             t2 = Tower(self, 3, 2)
-
-            test_size = Tower.size * const.GRID
-            self.test_layer = cocos.layer.ColorLayer(255, 255, 255, 55,
-                                width=test_size, height=test_size)
-            self.add(self.test_layer)
-
+            self.mapa.add(t2)
+            
+            rect_size = Tower.size * const.GRID
+            self.rect_layer = cocos.layer.ColorLayer(255, 255, 255, 55,
+                                width=rect_size, height=rect_size)
+            self.add(self.rect_layer)
+        
         def on_mouse_motion(self, x, y, dx, dy):
             grid_pos = get_grid_from_point(x, y)
             is_empty = self.mapa.is_empty_at(grid_pos)
-            can_fit_tower = self.mapa.can_fit_at(grid_pos, Tower.size)
-            self.test_layer.position = grid_pos[0]*const.GRID, grid_pos[1]*const.GRID
-            if not can_fit_tower:
-                self.test_layer.color = 255, 0, 0
+            can_fit_tower = self.mapa.can_fit_at(grid_pos, Tower)
+            self.rect_layer.position = grid_pos[0]*const.GRID, grid_pos[1]*const.GRID
+            if can_fit_tower:
+                self.rect_layer.color = 0, 255, 0
             else:
-                self.test_layer.color = 0, 255, 0
+                self.rect_layer.color = 255, 0, 0
 
         def on_mouse_press(self, x, y, buttons, modifiers):
             if buttons == pyglet.window.mouse.LEFT:
                 grid_pos = get_grid_from_point(x, y)
-                can_fit_tower = self.mapa.can_fit_at(grid_pos, Tower.size)
+                can_fit_tower = self.mapa.can_fit_at(grid_pos, Tower)
                 if can_fit_tower:
                     t = Tower(self, grid_pos[0], grid_pos[1])
                     self.mapa.add(t)
-
     
     director.init()
     const.WINDOW_W, const.WINDOW_H = director.get_window_size()

@@ -14,6 +14,7 @@ from cocos.layer import *
 
 import actors
 import const
+from mapa import get_grid_from_point
 
 pyglet.resource.path.append("images")
 pyglet.resource.reindex()
@@ -53,54 +54,60 @@ class HudLayer(Menu):
 
 class TowerCreationLayer(cocos.layer.Layer):
     is_event_handler = True
-    def __init__(self, type, menu, world, x=0, y=0):
+    def __init__(self, object_class, menu, world, x=0, y=0):
         super(TowerCreationLayer, self).__init__()
-        self.type = type
-        self.sprite = cocos.sprite.Sprite(self.type.__name__+'.png')
-        self.sprite.scale = 0.5
+        self.object_class = object_class
         self.draging = (x,y)
         self.world = world
         self.menu = menu
+
+        # a rect to indicate the object's possible position:
+        self.rect_size_w = self.object_class.size * const.GRID
+        self.rect_size_h = self.object_class.size * const.GRID
+        self.rect_layer = cocos.layer.ColorLayer(0,250,0,55,
+                                self.rect_size_w, self.rect_size_h)
         
-        self.valid_layer = cocos.layer.ColorLayer(0,250,0,180, self.type.size*const.GRID, self.type.size*const.GRID)        
-        self.invalid_layer = cocos.layer.ColorLayer(250,0,0,180, self.type.size*const.GRID, self.type.size*const.GRID)        
-        self.add(self.valid_layer)
-        self.valid_layer.visible = False
-        self.add(self.invalid_layer)
-        self.add(self.sprite)
-        self.valid_layer.position = (self.draging[0]-self.type.size*const.GRID/2, self.draging[1]-self.type.size*const.GRID/2)
-        self.invalid_layer.position = (self.draging[0]-self.type.size*const.GRID/2, self.draging[1]-self.type.size*const.GRID/2)
+        grid_pos = get_grid_from_point(self.draging[0], self.draging[1])
+        self.rect_layer.position = (grid_pos[0]*const.GRID,
+                                    grid_pos[1]*const.GRID)
+        self.add(self.rect_layer)
+
+        # dragging sprite of the map object:
+        self.sprite = cocos.sprite.Sprite(self.object_class.__name__+'.png')
+        self.sprite.scale = 0.5
         self.sprite.position = self.draging
+        self.add(self.sprite)
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.draging = director.get_virtual_coordinates(x,y)
-        valid_zone = self.world.is_space_free(self.draging)
-        if valid_zone:
-            self.valid_layer.visible = True
-            self.invalid_layer.visible = False
-            self.valid_layer.position = (self.draging[0]-self.type.size*const.GRID/2, self.draging[1]-self.type.size*const.GRID/2)
+        grid_pos = get_grid_from_point(self.draging[0], self.draging[1])
+        can_fit = self.world.mapa.can_fit_at(grid_pos, self.object_class)
+        self.rect_layer.position = grid_pos[0]*const.GRID, grid_pos[1]*const.GRID
+        if can_fit:
+            self.rect_layer.color = 0, 255, 0
         else:
-            self.invalid_layer.visible = True
-            self.valid_layer.visible = False
-            self.invalid_layer.position = (self.draging[0]-self.type.size*const.GRID/2, self.draging[1]-self.type.size*const.GRID/2)
+            self.rect_layer.color = 255, 0, 0
+            
         self.sprite.position = self.draging
 
     def on_mouse_press (self, x, y, buttons, modifiers):
         if buttons == pyglet.window.mouse.LEFT:
-            added = self.world.add_tower_from_menu(x, y, self.type)
-#            if added:
-#                self.get_ancestor(cocos.scene.Scene).remove(self)
-#                self.menu.selected = None
+            grid_pos = get_grid_from_point(self.draging[0], self.draging[1])
+            can_fit = self.world.mapa.can_fit_at(grid_pos, self.object_class)
+            if can_fit:
+                self.world.add_object(grid_pos[0], grid_pos[1],
+                                      self.object_class)
+
 
 if __name__ == "__main__":
     pyglet.font.add_directory('.')
+    from mapa import Mapa
 
     class DummyWorld(cocos.layer.Layer):
         def __init__(self):
             super(DummyWorld, self).__init__()
-        def is_space_free(self, pos):
-            return True
-        def add_tower_from_menu(self, *args, **kwargs):
+            self.mapa = Mapa()
+        def add_object(self, *args, **kwargs):
             pass
 
     director.init( resizable=False)

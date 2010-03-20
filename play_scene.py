@@ -16,6 +16,7 @@ import const
 
 import levels
 import enemies
+from mapa import Mapa
 
 import hud
 from actors import Tower, HQ, Enemy
@@ -60,17 +61,19 @@ class WorldLayer(cocos.layer.Layer):
     def __init__(self):
         super(WorldLayer, self).__init__()
 
-        self.fx_layer = cocos.layer.Layer()
+        self.mapa = Mapa()
+
         self.sights_layer = cocos.layer.Layer()
-        self.towers_layer = cocos.layer.Layer()
         self.enemies_layer = cocos.layer.Layer()
+        self.towers_layer = cocos.layer.Layer()
         self.shots_layer = cocos.layer.Layer()
+        self.fx_layer = cocos.layer.Layer()
         
         self.add(self.sights_layer, z = 0)
-        self.add(self.towers_layer, z = 2)
         self.add(self.enemies_layer, z = 1)
-        self.add(self.shots_layer, z = 1)
-        self.add(self.fx_layer, z = 0)
+        self.add(self.towers_layer, z = 2)
+        self.add(self.shots_layer, z = 3)
+        self.add(self.fx_layer, z = 4)
 
         # one HQ:
         self.hq = HQ(self, const.GRID_LEN_X / 2, const.GRID_LEN_Y - 2)
@@ -83,8 +86,10 @@ class WorldLayer(cocos.layer.Layer):
                       (const.GRID_LEN_X/2, 6),
                       (const.GRID_LEN_X/2, 10),)
         self.towers = {}
-        for x, y in tower_init_data:
-            self.towers[(x, y)] = Tower(self, x, y)
+        for grid_x, grid_y in tower_init_data:
+            tower = Tower(self, grid_x, grid_y)
+            self.towers[(grid_x, grid_y)] = tower # TODO: mapa replaces this?
+            self.mapa.add(tower)
         
         # Everything collideable on the map, calculate paths
         self.calculate_paths()
@@ -152,23 +157,27 @@ class WorldLayer(cocos.layer.Layer):
                 tower.remove()
                 self.resources.save(ADD_TOWER, 0.5)
                 self.calculate_paths()
-
+    
     def on_key_press(self, k, m):
         """When the user press a key"""
         if k == key.ESCAPE:
             director.pop()
-
-    def add_tower_from_menu(self, x, y, type):
-        """Add a tower to the map"""
-        gx, gy = map(lambda i:int(round(float(i)/const.GRID))-1,(x,y))
-        if ((gx,gy) not in self.towers and self.resources.can_i_spend(ADD_TOWER)):
-            self.towers[(gx, gy)] = type(self, gx, gy)
-            self.resources.spend(ADD_TOWER)
-            self.resources.update_counter()
-            self.calculate_paths()
-            return True
-        return False
-
+    
+    def add_object(self, grid_x, grid_y, object_class):
+        """Add an object to the world of class object_class"""
+        obj = object_class(self, grid_x, grid_y)
+        self.towers[(grid_x, grid_y)] = obj # TODO: mapa replaces this?
+        self.mapa.add(obj)
+        
+        # calculate resources:
+        self.resources.spend(ADD_TOWER)
+        self.resources.update_counter()
+        self.calculate_paths()
+        
+        if not self.resources.can_i_spend(ADD_TOWER):
+            # TODO: deactivate menu and cancel tower dragging
+            pass
+    
     def level_loader(self, level='1'):
         """Load a level from a template"""
         self.level = levels.level[level]
@@ -180,7 +189,7 @@ class WorldLayer(cocos.layer.Layer):
                 self.wave_enemies += [key] * wave[key]
             random.shuffle(self.wave_enemies)
             self.level_enemies += self.wave_enemies
-
+    
     def enemy_spawner(self, dt):
         """Spawn an enemy"""
         if self.level_enemies:
@@ -191,7 +200,7 @@ class WorldLayer(cocos.layer.Layer):
         y = 0
         x = (const.GRID_LEN_X/2 + random.randint(-10, 10))
         enemy = Enemy(self, x, y, template=template)
-
+    
     def game_over(self, dt):
         """Handles game over"""
         self.unschedule(self.update_world)
@@ -203,12 +212,12 @@ class WorldLayer(cocos.layer.Layer):
         self.add(game_over_text, z=0)
         self.game_over_t = time.time()
         self.schedule(self.exit)
-
+    
     def exit(self, dt):
         """Exit the game"""
         if time.time() - self.game_over_t > 3:
             director.pop()
-
+    
     def is_space_free(self, pos):
         return True
 
@@ -218,7 +227,7 @@ class ResourceManager(object):
         self.balance = balance
         self.world = world
         self.prices_table = prices_table
-
+        
         # resource counter on screen
         self.resource_counter = cocos.text.Label("",
                                                  font_size=20,
@@ -226,27 +235,27 @@ class ResourceManager(object):
         self.resource_counter.position = 10, 10
         self.world.add(self.resource_counter, z=0)
         self.update_counter()
-
+    
     def can_i_spend(self, action):
         """Determine if player can spend resources"""
         return (action in self.prices_table and
                 self.prices_table[action] <= self.balance)
-
+    
     def spend(self, action):
         """Spend resources"""
         assert(self.can_i_spend(action))
         self.balance -= self.prices_table[action]
         self.update_counter()
-
+    
     def save(self, action, mult):
         """Earn resources FIXME"""
         self.balance += int(round(self.prices_table[action] * mult))
         self.update_counter()
-
+    
     def update_counter(self):
         """Update grafic resources counter"""
         self.resource_counter.element.text = "recursos: %s" % self.balance
-
+    
     def process_reward(self, reward):
         """Earn resources FIXME"""
         self.balance += reward
