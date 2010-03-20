@@ -60,9 +60,9 @@ class WorldLayer(cocos.layer.Layer):
     is_event_handler = True
     def __init__(self):
         super(WorldLayer, self).__init__()
-
+        
         self.mapa = Mapa()
-
+        
         self.sights_layer = cocos.layer.Layer()
         self.enemies_layer = cocos.layer.Layer()
         self.towers_layer = cocos.layer.Layer()
@@ -74,21 +74,22 @@ class WorldLayer(cocos.layer.Layer):
         self.add(self.towers_layer, z = 2)
         self.add(self.shots_layer, z = 3)
         self.add(self.fx_layer, z = 4)
-
+        
         # one HQ:
         self.hq = HQ(self, const.GRID_LEN_X / 2, const.GRID_LEN_Y - 2)
-
+        
         # one resource manager
         self.resources = ResourceManager(self, INITIAL_BALANCE)
-
+        
+        self.towers = []
+        
         # some towers:
         tower_init_data = ((const.GRID_LEN_X/2, 2),
                       (const.GRID_LEN_X/2, 6),
                       (const.GRID_LEN_X/2, 10),)
-        self.towers = {}
         for grid_x, grid_y in tower_init_data:
             tower = Tower(self, grid_x, grid_y)
-            self.towers[(grid_x, grid_y)] = tower # TODO: mapa replaces this?
+            self.towers.append(tower)
             self.mapa.add(tower)
         
         # Everything collideable on the map, calculate paths
@@ -100,7 +101,7 @@ class WorldLayer(cocos.layer.Layer):
         self.impacts = []
         self.schedule(self.update_world)
         self.schedule_interval(self.enemy_spawner, 1)
-
+        
         self.level_loader()
     
     def calculate_paths(self):
@@ -109,10 +110,7 @@ class WorldLayer(cocos.layer.Layer):
                       for x in range(const.GRID_LEN_Y)]
         dirs = [(-1, 0), (0, -1), (1, 0), (0, 1),]
         target = (self.hq.grid_x, self.hq.grid_y)
-        collideable = []
-        for tower in self.towers.values():
-            x, y = tower.grid_x, tower.grid_y
-            collideable += [(x, y), (x+1, y), (x, y-1), (x+1, y-1)]
+        collideable = self.mapa.get_filled_positions()
         q = [target]
         while len(q):
             pos = q.pop(0)
@@ -129,17 +127,11 @@ class WorldLayer(cocos.layer.Layer):
     
     def update_world(self, dt):
         """Update the game state"""
-        for tower in self.towers.values():
-            tower.update()
+        updatables = self.towers + self.enemies + \
+                     self.shots + self.impacts
         
-        for enemy in self.enemies:
-            enemy.update()
-        
-        for shot in self.shots:
-            shot.update()
-        
-        for impact in self.impacts:
-            impact.update()
+        for obj in updatables:
+            obj.update()
 
     def on_mouse_press (self, x, y, buttons, modifiers):
         """This function is called when any mouse button is pressed
@@ -166,16 +158,18 @@ class WorldLayer(cocos.layer.Layer):
     def add_object(self, grid_x, grid_y, object_class):
         """Add an object to the world of class object_class"""
         obj = object_class(self, grid_x, grid_y)
-        self.towers[(grid_x, grid_y)] = obj # TODO: mapa replaces this?
+        self.towers.append(obj) # TODO assumming tower but can change
+                                # in the future
         self.mapa.add(obj)
         
         # calculate resources:
-        self.resources.spend(ADD_TOWER)
+        self.resources.spend(ADD_TOWER) # TODO assumming tower but can
+                                        # change in the future
         self.resources.update_counter()
         self.calculate_paths()
         
         if not self.resources.can_i_spend(ADD_TOWER):
-            # TODO: deactivate menu and cancel tower dragging
+            # TODO: deactivate menu and cancel object dragging
             pass
     
     def level_loader(self, level='1'):

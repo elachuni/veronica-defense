@@ -104,20 +104,20 @@ class Tower(MapObject):
     shot_class = Shot
     sprite_file = 'Tower.png'
     size = 2
-    adjust_y = -27
+    adjust_y = 0#-27
 
     def __init__(self, world, grid_x, grid_y, sight=100):
         super(Tower, self).__init__(world, grid_x, grid_y)
         self.sight = sight
         self.is_shooting = False
-
+        
         self.create_sprite()
         # the tower sprite:
         self.sprite.scale = 0.4
-
+        
         # adjust tower sprite rotation point:
         self.sprite.transform_anchor = 0, self.adjust_y
-
+        
         # a circle sprite to show the sight:
         self.sight_sprite = cocos.sprite.Sprite('circle.png')
         self.sight_sprite.x = self.sprite.x
@@ -126,7 +126,7 @@ class Tower(MapObject):
         self.sight_sprite.opacity = 90
         # TODO poner un self.world.sight_layer ?
         self.world.add(self.sight_sprite)
-
+        
         tower_base = cocos.sprite.Sprite('tower_base.png')
         tower_base.scale = 0.5
         tower_base.x = self.sprite.x
