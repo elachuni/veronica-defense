@@ -51,6 +51,10 @@ class HudLayer(Menu):
         Menu.on_mouse_motion(self, x, y, dx, dy)
         self.mouse_x, self.mouse_y = director.get_virtual_coordinates(x,y)
 
+    def end_drag(self):
+        self.get_ancestor(cocos.scene.Scene).remove(self.drag_object)
+        self.selected = None
+
 class TowerCreationLayer(cocos.layer.Layer):
     is_event_handler = True
     def __init__(self, object_class, menu, world, x=0, y=0):
@@ -96,6 +100,7 @@ class TowerCreationLayer(cocos.layer.Layer):
             if can_fit:
                 self.world.add_object(grid_pos[0], grid_pos[1],
                                       self.object_class)
+                self.menu.end_drag()
 
 
 if __name__ == "__main__":
