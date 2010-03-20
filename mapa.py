@@ -28,6 +28,9 @@ class Mapa(object):
                 grid_pos = map_object.grid_x+i, map_object.grid_y+j
                 self._mapa[grid_pos] = map_object
 
+    def get_filled_positions(self):
+        return self._mapa.keys()
+
     def is_empty_at(self, grid_pos):
         """
         Return True if the map is empty at grid_pos position.
