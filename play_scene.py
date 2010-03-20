@@ -16,7 +16,7 @@ import const
 
 import levels
 import enemies
-from mapa import Mapa
+from mapa import Mapa, get_grid_from_point
 
 import hud
 from actors import Tower, HQ, Enemy
@@ -141,14 +141,20 @@ class WorldLayer(cocos.layer.Layer):
         'modifiers' is a bitwise or of pyglet.window.key modifier constants
             (values like 'SHIFT', 'OPTION', 'ALT')
         """
-        # lets calculate grid x, y
-        gx,gy = map(lambda i:int(round(float(i)/const.GRID))-1,(x,y))
+        grid_pos = get_grid_from_point(x, y)
+        
         if buttons == pyglet.window.mouse.RIGHT:
-            if (gx, gy) in self.towers:
-                tower = self.towers.pop((gx, gy))
-                tower.remove()
+            # remove tower:
+            obj = self.mapa.get_at(grid_pos)
+            if obj is not None and obj.__class__ == Tower:
+                obj.remove()
+                self.mapa.remove(obj)
                 self.resources.save(ADD_TOWER, 0.5)
                 self.calculate_paths()
+                
+        elif buttons == pyglet.window.mouse.LEFT:
+            # TODO select tower:
+            pass
     
     def on_key_press(self, k, m):
         """When the user press a key"""
