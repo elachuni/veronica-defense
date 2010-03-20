@@ -127,15 +127,14 @@ class Tower(MapObject):
         # TODO poner un self.world.sight_layer ?
         self.world.add(self.sight_sprite)
         
-        tower_base = cocos.sprite.Sprite('tower_base.png')
-        tower_base.scale = 0.5
-        tower_base.x = self.sprite.x
-        tower_base.y = self.sprite.y + self.adjust_y
-        self.world.add(tower_base)
+        self.tower_base = cocos.sprite.Sprite('tower_base.png')
+        self.tower_base.scale = 0.5
+        self.tower_base.x = self.sprite.x
+        self.tower_base.y = self.sprite.y + self.adjust_y
+        self.world.add(self.tower_base)
         
         self.last_shot = time.time()
-        
-
+    
     def update(self):
         """Tower logic on each frame"""
         # change sight color for testing:
@@ -158,7 +157,12 @@ class Tower(MapObject):
                                        self.size / 4.0,
                                        self.sprite.rotation)
                 self.last_shot = time.time()
-
+    
+    def remove(self):
+        self.world.remove(self.sight_sprite)
+        self.world.remove(self.tower_base)
+        super(Tower, self).remove()
+        
     def layer(self):
         """Layer where towers are placed"""
         return self.world.towers_layer

@@ -28,8 +28,19 @@ class Mapa(object):
                 grid_pos = map_object.grid_x+i, map_object.grid_y+j
                 self._mapa[grid_pos] = map_object
 
+    def remove(self, map_object):
+        for k, v in self._mapa.items():
+            if v == map_object:
+                del self._mapa[k]
+
     def get_filled_positions(self):
         return self._mapa.keys()
+
+    def get_at(self, grid_pos):
+        """
+        Return the object map at grid_pos, or None if empty.
+        """
+        return self._mapa.get(grid_pos)
 
     def is_empty_at(self, grid_pos):
         """
