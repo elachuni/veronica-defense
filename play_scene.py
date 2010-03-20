@@ -54,11 +54,11 @@ class Grid(cocos.draw.Canvas):
             self.line_to((w, self.height+self.y))
 
 
-class TdLayer(cocos.layer.Layer):
+class WorldLayer(cocos.layer.Layer):
     """World"""
     is_event_handler = True
     def __init__(self):
-        super(TdLayer, self).__init__()
+        super(WorldLayer, self).__init__()
 
         self.fx_layer = cocos.layer.Layer()
         self.sights_layer = cocos.layer.Layer()
@@ -257,8 +257,8 @@ class PlayScene(cocos.scene.Scene):
         super(PlayScene, self).__init__()
         bg_layer = cocos.layer.ColorLayer(255, 255, 255, 255)
 #        grid_layer = GridLayer()
-        td_layer = TdLayer()
-        hud_layer = hud.HudLayer(td_layer)
+        world_layer = WorldLayer()
+        hud_layer = hud.HudLayer(world_layer)
 
         # wall tile (120 x 120 px):
         for i in range(0, const.WINDOW_W, 120):
@@ -270,7 +270,7 @@ class PlayScene(cocos.scene.Scene):
             
         self.add(bg_layer, z=0)
 #        self.add(grid_layer, z=1)
-        self.add(td_layer, z=2)
+        self.add(world_layer, z=2)
         self.add(hud_layer, z=3)
 
 
