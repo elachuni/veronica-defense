@@ -1,13 +1,21 @@
 
-level = {}
+from veronica_logic import CommonTower, HardTower, CommonEnemy, FastEnemy
 
-level['1'] = {'enemies':
-                  # olas de enemigos
-                  ({'base': 20,
-                    'ball': 10,
-                    },
-                   {'hard_ball': 3},
-                   {'bad_cannon': 1}
-                   )
-              }
+levels = [
+
+{
+ 'enemies':
+    # olas de enemigos
+    {
+     CommonEnemy: 20,
+     FastEnemy: 10,
+    },
+ 'initial towers':
+    {
+     CommonTower: [(10, 2), (10, 6)],
+     HardTower: [(10, 10)]
+    }
+ },
+
+]
 
