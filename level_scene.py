@@ -48,7 +48,7 @@ class WorldLayer(Layer):
     """
     is_event_handler = True
     
-    def __init__(self, level):
+    def __init__(self, level_data):
         super(WorldLayer, self).__init__()
         
         self.world = World(grid_size=settings.GRID_SIZE)
@@ -76,14 +76,14 @@ class WorldLayer(Layer):
         self.add_world_object(Hq, grid_pos)
         
         # some towers:
-        for tower_class, positions in level['initial towers'].items():
+        for tower_class, positions in level_data['initial towers'].items():
             for pos in positions:
                 sprite_class = sprite_per_object[tower_class]
                 self.add_tower(tower_class, pos)
         
         # some enemies:
         self.enemies_to_spawn = []
-        for enemy_class, number in level['enemies'].items():
+        for enemy_class, number in level_data['enemies'].items():
             self.enemies_to_spawn.append((enemy_class, number))
         self.enemies_to_spawn.reverse()
         
@@ -167,10 +167,10 @@ class WorldLayer(Layer):
 
 
 class LevelScene(Scene):
-    def __init__(self, level):
+    def __init__(self, level_data):
         super(LevelScene, self).__init__()
         bg_layer = BackgroundLayer()
-        world_layer = WorldLayer(level)
+        world_layer = WorldLayer(level_data)
         
         self.add(bg_layer, z=0)
         self.add(world_layer, z=1)
