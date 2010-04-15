@@ -1,7 +1,7 @@
 
 from veronica_logic import CommonTower, HardTower, CommonEnemy, FastEnemy
 
-levels = [
+levels_data = [
 
 {
  'enemies':
