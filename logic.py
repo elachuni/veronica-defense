@@ -44,10 +44,14 @@ class Grid(object):
     
     def get_at(self, grid_cell):
         """
-        return the world objects in the given grid cell, or None if
-        the cell is empty.
+        return a set of world objects in the given grid cell, one
+        world object if there is only one, or None if the cell is
+        empty.
         """
-        return self.grid.get(grid_cell)
+        result = self.grid.get(grid_cell)
+        if result is not None and len(result) == 1:
+            return list(result)[0]
+        return result
     
     def get_filled_cells(self):
         return self.grid.keys()
@@ -114,7 +118,7 @@ class Grid(object):
                 if len(world_objs_set) == 0:
                     del self.grid[grid_cell]
                 if is_solid:
-                    del self.solids[cell]
+                    del self.solids[grid_cell]
     
     def move(self, world_object, new_pos):
         """
