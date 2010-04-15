@@ -43,6 +43,9 @@ class BackgroundLayer(ColorLayer):
 
 
 class WorldLayer(Layer):
+    """
+    the objects in the world
+    """
     is_event_handler = True
     
     def __init__(self, level):
