@@ -232,6 +232,10 @@ class WorldObject(Notifier):
         self.world = None
 
 
+class Rock(WorldObject):
+    size = (1, 1)
+
+
 class Tower(WorldObject):
     """
     the tower that destroys enemies shooting them.
@@ -425,8 +429,11 @@ class ResourceManager(Notifier):
         self.resources -= res
 
 
+
+
+
 # solid world classes:
-solid_classes = [Tower]
+solid_classes = [Tower, Rock]
 
 
 class Level(Notifier):
@@ -449,6 +456,12 @@ class Level(Notifier):
         # test world object:
         grid_pos = (7, 5)
         self.add_world_object(WorldObject, grid_pos)
+
+        # some rocks:
+        for i in range(8) + range(10, settings.GRID_SIZE[0]):
+            grid_pos = (i, 1)
+            self.add_world_object(Rock, grid_pos)
+        
         
         # the hq:
         grid_pos = (10, 14)
