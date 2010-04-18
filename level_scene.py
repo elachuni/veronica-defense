@@ -68,10 +68,7 @@ class WorldLayer(Layer):
             EnemySprite: self.enemies_layer,
             }
         
-        self.schedule_interval(self.update, 1.0/settings.FPS)
-    
-    def update(self, dt):
-        self.world.update()
+        self.schedule_interval(world.update, 1.0/settings.FPS)
     
     def make_sprite(self, sprite_class, world_obj, *args, **kwargs):
         """
@@ -126,20 +123,21 @@ class WorldLayer(Layer):
 class LevelScene(Scene):
     def __init__(self, level):
         super(LevelScene, self).__init__()
-        self.level = level
+        level.add_listener(self)
         
         bg_layer = BackgroundLayer()
-        world_layer = WorldLayer(self.level.world)
+        world_layer = WorldLayer(level.world)
         
         self.add(bg_layer, z=0)
         self.add(world_layer, z=1)
         
-        self.schedule_interval(self.spawn_enemy, settings.SPAWN_SECS)
-        self.level.start()
+        self.schedule_interval(level.spawn_enemy, settings.SPAWN_SECS)
+        level.start()
     
-    def spawn_enemy(self, dt):
-        self.level.spawn_enemy()
+    def on_spawn_enemy(self, level, *args):
+        """
+        if there are no more enemies, stop the spawning
+        """
+        if len(level.enemies_to_spawn) == 0:
+            self.unschedule(level.spawn_enemy)
         
-        if len(self.level.enemies_to_spawn) == 0:
-            self.unschedule(self.spawn_enemy)
-    
