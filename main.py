@@ -21,8 +21,8 @@ def main():
     level_data = levels_data[0]
     level = Level(level_data)
     
-    scene = LevelScene(level)
-    director.run(scene)
+    level_scene = LevelScene(level)
+    director.run(level_scene)
     
 
 if __name__ == '__main__':
