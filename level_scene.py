@@ -48,10 +48,10 @@ class WorldLayer(Layer):
     """
     is_event_handler = True
     
-    def __init__(self, level_data):
+    def __init__(self, world, level_data):
         super(WorldLayer, self).__init__()
         
-        self.world = World(grid_size=settings.GRID_SIZE)
+        self.world = world
         
         self.resource_manager = ResourceManager(1000)
         
@@ -167,10 +167,10 @@ class WorldLayer(Layer):
 
 
 class LevelScene(Scene):
-    def __init__(self, level_data):
+    def __init__(self, world, level_data):
         super(LevelScene, self).__init__()
         bg_layer = BackgroundLayer()
-        world_layer = WorldLayer(level_data)
+        world_layer = WorldLayer(world, level_data)
         
         self.add(bg_layer, z=0)
         self.add(world_layer, z=1)

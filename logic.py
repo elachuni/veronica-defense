@@ -133,13 +133,11 @@ class World():
     the world where the battle occurs.
     """
     def __init__(self, grid_size):
-        """
-        """
         self.grid = Grid(grid_size)
         
         self.towers = set()
         self.enemies = set()
-
+        
         self.hq = None
         self.active_tower = None
     
@@ -214,8 +212,6 @@ class WorldObject(Notifier):
     size = (1, 1)
     
     def __init__(self):
-        """
-        """
         super(WorldObject, self).__init__()
         
         # the object knows the world
