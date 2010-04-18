@@ -18,8 +18,11 @@ class LifeBarSprite(CocosNode):
     
     def __init__(self, enemy):
         super(LifeBarSprite, self).__init__()
-        self.enemy = enemy
-        self.max_length = self.enemy.initial_lives
+
+        # the lifebar will listen to the enemy:
+        enemy.add_listener(self)
+        
+        self.max_length = enemy.initial_lives
         self.x_offset = -(self.max_width / 2) 
         self.y_offset = self.max_height / 2 + 5
         
@@ -35,7 +38,7 @@ class LifeBarSprite(CocosNode):
         self.gl_draw([(self.container_vertex, self.back_color),
                       (self.bar_vertex, self.top_color)])
     
-    def on_get_hurt(self, enemy):
+    def on_get_hurt(self, enemy, *args):
         """
         updates position and lives of the target, and re-define te
         vertex points

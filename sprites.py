@@ -54,9 +54,9 @@ class WorldSprite(CocosNode):
         
         self.setup(world_object)
     
-    def setup(self, world_object):
+    def setup(self, world_obj):
         """
-        do the sprite composition
+        do the sprite composition and place it in the grid
         """
         filename = self.name.replace(' ', '_') + '.png'
         try:
@@ -65,6 +65,12 @@ class WorldSprite(CocosNode):
             self.add(self.sprite, z=10)
         except ResourceNotFoundException:
             pass
+
+        # place the sprite in the location given by the grid.
+        x, y = world_obj.grid_pos
+        width, height = world_obj.size
+        self.position = ((x + width / 2.0) * GRID_CELL,
+                         (y + height / 2.0) * GRID_CELL)
     
     def remove_me(self):
         """
@@ -72,16 +78,6 @@ class WorldSprite(CocosNode):
         """
         self.parent.remove(self)
     
-    def on_enter_world(self, world_object):
-        """
-        set the sprite in the location given by the grid.
-        """
-        x = world_object.grid_pos[0]
-        y = world_object.grid_pos[1]
-        width = world_object.size[0]
-        height = world_object.size[1]
-        self.position = ((x + width / 2.0) * GRID_CELL,
-                         (y + height / 2.0) * GRID_CELL)
 
 
 class EnemySprite(WorldSprite):
@@ -106,7 +102,6 @@ class EnemySprite(WorldSprite):
         
         # add lifebar:
         self.lifebar = LifeBarSprite(enemy)
-        enemy.add_listener(self.lifebar)
         self.add(self.lifebar)
     
     def get_rotation_angle(self, direction, new_direction):
@@ -145,7 +140,7 @@ class EnemySprite(WorldSprite):
         self.do(MoveBy(move_px, self.move_vel) +
                 CallFunc(enemy.move, enemy.next_direction))
     
-    def on_get_hurt(self, enemy):
+    def on_get_hurt(self, enemy, damage):
         self.body.color = (255, 100, 100)
         
         def restore_color():
