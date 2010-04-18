@@ -8,10 +8,10 @@ from cocos.director import director
 
 from pyglet.window import mouse, key
 
-from veronica_logic import *
+from veronica_logic import Tower
 from sprites import WorldSprite, TowerSprite, CommonTowerSprite, \
      HardTowerSprite, EnemySprite, CommonEnemySprite, FastEnemySprite, \
-     HqSprite, all_sprites
+     HqSprite, all_sprites, ResourcesSprite
 
 import settings
 
@@ -53,8 +53,6 @@ class WorldLayer(Layer):
         
         self.world = world
         world.add_listener(self)
-        
-#        self.resource_manager = ResourceManager(1000)
         
         self.towers_layer = Layer()
         self.enemies_layer = Layer()
@@ -120,6 +118,16 @@ class WorldLayer(Layer):
                 self.world.deactivate_tower()
 
 
+class InfoLayer(Layer):
+    """
+    information on screen
+    """
+    def __init__(self, resources):
+        super(InfoLayer, self).__init__()
+        resources_sprite = ResourcesSprite(resources)
+        self.add(resources_sprite)
+
+
 class LevelScene(Scene):
     def __init__(self, level):
         super(LevelScene, self).__init__()
@@ -127,9 +135,11 @@ class LevelScene(Scene):
         
         bg_layer = BackgroundLayer()
         world_layer = WorldLayer(level.world)
-        
+        info_layer = InfoLayer(level.resources)
+
         self.add(bg_layer, z=0)
         self.add(world_layer, z=1)
+        self.add(info_layer, z=2)
         
         self.schedule_interval(level.spawn_enemy, settings.SPAWN_SECS)
         level.start()

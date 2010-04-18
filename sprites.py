@@ -5,6 +5,8 @@ from cocos.sprite import Sprite
 from cocos.actions import MoveBy, RotateBy, RotateTo, CallFunc, \
     FadeOut, ScaleTo, ScaleBy, FadeTo, Delay
 
+from cocos.text import Label
+
 from pyglet.resource import ResourceNotFoundException
 
 from lifebar_sprite import LifeBarSprite
@@ -278,3 +280,18 @@ class HqSprite(WorldSprite):
 all_sprites = [CommonTowerSprite, HardTowerSprite, 
                CommonEnemySprite, FastEnemySprite, 
                HqSprite, WorldSprite]
+
+
+class ResourcesSprite(CocosNode):
+    def __init__(self, resources):
+        super(ResourcesSprite, self).__init__()
+        resources.add_listener(self)
+        
+        self.counter = Label("", font_size=20, color=(200,200,200,255))
+        self.counter.position = 10, 10
+        self.add(self.counter)
+        
+        self.on_operate(resources)
+    
+    def on_operate(self, resources, *args):
+        self.counter.element.text = "recursos: %s" % resources._resources

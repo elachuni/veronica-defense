@@ -4,7 +4,7 @@ import pyglet.resource
 from cocos.director import director
 
 import settings
-from logic import World, Level
+from logic import World, Level, ResourceManager
 from levels_data import levels_data
 from level_scene import LevelScene
 
@@ -18,9 +18,8 @@ def main():
     settings.GRID_SIZE = (settings.WINDOW_SIZE[0] / settings.GRID_CELL,
                           settings.WINDOW_SIZE[1] / settings.GRID_CELL)
     
-    world = World(grid_size=settings.GRID_SIZE)
     level_data = levels_data[0]
-    level = Level(world, level_data)
+    level = Level(level_data)
     
     scene = LevelScene(level)
     director.run(scene)
