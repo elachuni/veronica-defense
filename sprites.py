@@ -165,6 +165,11 @@ class EnemySprite(WorldSprite):
         self.body.do(FadeTo(20, 1.5))
 
 
+class RockSprite(WorldSprite):
+    name = 'rock'
+    world_object_class = Rock
+
+
 class TowerSprite(WorldSprite):
     
     def __init__(self, tower, shots_layer):
@@ -280,7 +285,7 @@ class HqSprite(WorldSprite):
 
 all_sprites = [CommonTowerSprite, HardTowerSprite, 
                CommonEnemySprite, FastEnemySprite, 
-               HqSprite, WorldSprite]
+               HqSprite, WorldSprite, RockSprite]
 
 
 class InfoSprite(CocosNode):
