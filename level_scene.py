@@ -13,6 +13,8 @@ from sprites import WorldSprite, TowerSprite, CommonTowerSprite, \
      HardTowerSprite, EnemySprite, CommonEnemySprite, FastEnemySprite, \
      HqSprite, all_sprites, InfoSprite
 
+from split_layer import SplitLayer, split_horizontal, split_vertical
+
 import settings
 
 
@@ -67,12 +69,12 @@ class ControlLayer(Layer):
                 self.level.world.deactivate_tower()
 
 
-class WorldLayer(Layer):
+class WorldLayer(SplitLayer):
     """
     the objects in the world
     """
-    def __init__(self, world):
-        super(WorldLayer, self).__init__()
+    def __init__(self, split_data, world):
+        super(WorldLayer, self).__init__(split_data)
         
         self.world = world
         world.add_listener(self)
@@ -123,12 +125,12 @@ class WorldLayer(Layer):
         pass #print "remove!"
 
 
-class InfoLayer(Layer):
+class InfoLayer(SplitLayer):
     """
     information on screen
     """
-    def __init__(self):
-        super(InfoLayer, self).__init__()
+    def __init__(self, split_data):
+        super(InfoLayer, self).__init__(split_data, color=(0, 0, 0, 200))
 
     def setup(self, hq, resources):
         info_sprite = InfoSprite(hq, resources)
@@ -138,18 +140,35 @@ class InfoLayer(Layer):
 class LevelScene(Scene):
     def __init__(self, level):
         super(LevelScene, self).__init__()
+        
+        # the scene will listen to the level:
         level.add_listener(self)
+
+        # split the window in three areas:
+        #  world, hud, and info
+        
+        window_split = {'position': (0, 0), 'size': settings.WINDOW_SIZE}
+        
+        split = settings.WINDOW_SIZE[0] * 3/4
+        world_split, rest_split = split_horizontal(window_split, split)
+        
+        split = settings.INFO_HEIGHT
+        info_split, hud_split = split_vertical(rest_split, split)
         
         bg_layer = BackgroundLayer()
-        world_layer = WorldLayer(level.world)
-        info_layer = InfoLayer()
+        
+        world_layer = WorldLayer(world_split, level.world)
+        hud_layer = SplitLayer(hud_split, color=(0, 0, 0, 100)) # TODO
+        info_layer = InfoLayer(info_split)
+        
         control_layer = ControlLayer(level)
-
+        
         self.add(bg_layer, z=0)
         self.add(world_layer, z=1)
-        self.add(info_layer, z=2)
-        self.add(control_layer, z=3)
-
+        self.add(hud_layer, z=2)
+        self.add(info_layer, z=3)
+        self.add(control_layer, z=4)
+        
         self.schedule_interval(level.spawn_enemy, settings.SPAWN_SECS)
         level.start()
         
@@ -157,4 +176,4 @@ class LevelScene(Scene):
     
     def on_stop_spawning(self, level, *args):
         self.unschedule(level.spawn_enemy)
-        
+

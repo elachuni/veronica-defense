@@ -290,13 +290,13 @@ class InfoSprite(CocosNode):
         resources.add_listener(self)
 
         # label to display hq lives:
-        self.lives_label = Label("", font_size=20,
+        self.lives_label = Label("", font_size=14,
                                      color=(200,200,200,255))
         self.lives_label.position = 10, 35
         self.add(self.lives_label)
         
         # label to display resources:
-        self.resources_label = Label("", font_size=20,
+        self.resources_label = Label("", font_size=14,
                                      color=(200,200,200,255))
         self.resources_label.position = 10, 10
         self.add(self.resources_label)
