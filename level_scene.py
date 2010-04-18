@@ -42,12 +42,35 @@ class BackgroundLayer(ColorLayer):
                 self.add(wall_tile)
 
 
+class ControlLayer(Layer):
+    is_event_handler = True
+    
+    def __init__(self, level):
+        super(ControlLayer, self).__init__()
+        self.level = level
+    
+    def on_mouse_press(self, x, y, buttons, modifiers):
+        grid_cell = get_cell_from_point(x, y)
+        
+        if buttons == mouse.RIGHT:
+            world_obj = self.level.world.grid.get_at(grid_cell)
+            # remove tower:
+            if world_obj is not None and isinstance(world_obj, Tower):
+                self.level.remove_tower(world_obj)
+        
+        elif buttons == mouse.LEFT:
+            world_obj = self.level.world.grid.get_at(grid_cell)
+            # activate or deactivate tower:
+            if world_obj is not None and isinstance(world_obj, Tower):
+                self.level.world.activate_tower(world_obj)
+            else:
+                self.level.world.deactivate_tower()
+
+
 class WorldLayer(Layer):
     """
     the objects in the world
     """
-    is_event_handler = True
-    
     def __init__(self, world):
         super(WorldLayer, self).__init__()
         
@@ -98,24 +121,6 @@ class WorldLayer(Layer):
     
     def on_remove(self, world, *args):
         pass #print "remove!"
-    
-    def on_mouse_press(self, x, y, buttons, modifiers):
-        grid_cell = get_cell_from_point(x, y)
-        
-        if buttons == mouse.RIGHT:
-            # remove tower:
-            world_obj = self.world.grid.get_at(grid_cell)
-            if world_obj is not None and isinstance(world_obj, Tower):
-                self.world.remove(world_obj)
-                #resource_manager.operate('remove tower')
-        
-        elif buttons == mouse.LEFT:
-            # select tower:
-            world_obj = self.world.grid.get_at(grid_cell)
-            if world_obj is not None and isinstance(world_obj, Tower):
-                self.world.activate_tower(world_obj)
-            else:
-                self.world.deactivate_tower()
 
 
 class InfoLayer(Layer):
@@ -138,11 +143,13 @@ class LevelScene(Scene):
         bg_layer = BackgroundLayer()
         world_layer = WorldLayer(level.world)
         info_layer = InfoLayer()
+        control_layer = ControlLayer(level)
 
         self.add(bg_layer, z=0)
         self.add(world_layer, z=1)
         self.add(info_layer, z=2)
-        
+        self.add(control_layer, z=3)
+
         self.schedule_interval(level.spawn_enemy, settings.SPAWN_SECS)
         level.start()
         
