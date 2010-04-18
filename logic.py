@@ -491,14 +491,21 @@ class Level(Notifier):
         pos = (10 + random.randint(-8, 8), 0)
         self.add_world_object(enemy_class, pos)
     
+    @notify
+    def stop_spawning(self):
+        pass
+    
     def on_enemy_success(self, enemy):
         self.world.hq.loose_energy(10)
         if self.world.hq.energy < 0:
             print "you loose"
-    
-    @notify
-    def stop_spawning(self):
-        pass
+
+    def remove_tower(self, tower):
+        """
+        the user removes a tower from the world
+        """
+        self.world.remove(tower)
+        self.resources.operate('remove tower')
 
 
 def test():
