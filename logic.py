@@ -429,6 +429,9 @@ solid_classes = [Tower]
 
 
 class Level(Notifier):
+    """
+    control the objects in the world
+    """
     def __init__(self, level_data):
         super(Level, self).__init__()
         
@@ -472,18 +475,23 @@ class Level(Notifier):
         self.world.add(world_obj, grid_pos)
         if isinstance(world_obj, Enemy):
             world_obj.start_move()
-
-    @notify
+    
     def spawn_enemy(self, dt):
         enemy_class, num = self.enemies_to_spawn[0]
         num -= 1
         if num == 0:
             self.enemies_to_spawn.pop(0)
+            if len(self.enemies_to_spawn) == 0:
+                self.level_finished()
         else:
             self.enemies_to_spawn[0] = enemy_class, num
         
         pos = (10 + random.randint(-8, 8), 0)
         self.add_world_object(enemy_class, pos)
+
+    @notify
+    def level_finished(self):
+        print "you win!"
 
 
 def test():
