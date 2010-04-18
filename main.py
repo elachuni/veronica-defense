@@ -15,8 +15,6 @@ def main():
     director.init(vsync=True)
     
     settings.WINDOW_SIZE = director.get_window_size()
-    settings.GRID_SIZE = (settings.WINDOW_SIZE[0] / settings.GRID_CELL,
-                          settings.WINDOW_SIZE[1] / settings.GRID_CELL)
     
     level_data = levels_data[0]
     level = Level(level_data)
