@@ -1,4 +1,5 @@
 from cocos.layer import Layer, ColorLayer
+from cocos.rect import Rect
 
 """
 SplitLayer
@@ -8,56 +9,58 @@ SplitLayer
 class SplitLayer(Layer):
     """
     they form scenes with non-overlaping layers
+
+    split_rect: the rect that sets the position and size of the layer
+    
     """
-    def __init__(self, split_data, color=None):
+    def __init__(self, split_rect, color=None):
         super (SplitLayer, self).__init__()
-        self.position = split_data['position']
-        size = split_data['size']
+        self.split_rect = split_rect
         
-        kwargs = {'width': size[0], 'height': size[1]}
+        self.position = split_rect.position
         
-        if color is None:
-            color = (0, 0, 0, 0)
-        
-        self.area = ColorLayer(*color, **kwargs)
-        self.add(self.area)
+        if color is not None:
+            size = split_rect.size
+            kwargs = {'width': size[0], 'height': size[1]}
+            self.area = ColorLayer(*color, **kwargs)
+            self.add(self.area)
 
 
-def _split(split_data, split, horiz_vert):
-    position = split_data['position']
-    size = split_data['size']
+def _split(rect, distance, horiz_vert):
+    position = rect.position
+    size = rect.size
     
     if horiz_vert == 'horiz':
-        split_pos_a = position
-        split_pos_b = position[0] + split, position[1]
+        rect_a_pos = position
+        rect_b_pos = position[0] + distance, position[1]
         
-        split_size_a = split, size[1]
-        split_size_b = size[0] - split, size[1]
+        rect_a_size = distance, size[1]
+        rect_b_size = size[0] - distance, size[1]
     
     else:
-        split_pos_a = position
-        split_pos_b = position[0], position[1] + split
+        rect_a_pos = position
+        rect_b_pos = position[0], position[1] + distance
         
-        split_size_a = size[0], split
-        split_size_b = size[0], size[1] - split
+        rect_a_size = size[0], distance
+        rect_b_size = size[0], size[1] - distance
     
-    split_data_a = {'position': split_pos_a, 'size': split_size_a}
-    split_data_b = {'position': split_pos_b, 'size': split_size_b}
+    rect_a = Rect(rect_a_pos[0], rect_a_pos[1], *rect_a_size)
+    rect_b = Rect(rect_b_pos[0], rect_b_pos[1], *rect_b_size)
     
-    return (split_data_a, split_data_b)
+    return (rect_a, rect_b)
 
 
-def split_horizontal(split_data, split):
+def split_horizontal(rect, distance):
     """
-    split the rect horizontally
+    get two new rects, by spliting the rect horizontally at distance
     """
-    return _split(split_data, split, 'horiz')
+    return _split(rect, distance, 'horiz')
 
-def split_vertical(split_data, split):
+def split_vertical(rect, distance):
     """
-    split the rect vertically
+    get two new rects, by spliting the rect verticaally at distance
     """
-    return _split(split_data, split, 'vert')
+    return _split(rect, distance, 'vert')
 
 
 def main():
@@ -70,15 +73,17 @@ def main():
     director.init()
     
     window_size = director.get_window_size()
+    window_rect = Rect(0, 0, *window_size)
+    
+    distance = window_size[0] * 3/4
+    main_rect, rest_rect = split_horizontal(window_rect, distance)
+    
     status_height = 80
+    status_rect, menu_rect = split_vertical(rest_rect, status_height)
     
-    window_data = {'position': (0, 0), 'size': window_size}
-    main_data, rest_data = split_horizontal(window_data, window_size[0] * 3/4)
-    status_data, menu_data = split_vertical(rest_data, status_height)
-    
-    main_layer = SplitLayer(main_data)
-    menu_layer = SplitLayer(menu_data, color=(255, 255, 0, 255))
-    status_layer = SplitLayer(status_data, color=(255, 0, 255, 255))
+    main_layer = SplitLayer(main_rect)
+    menu_layer = SplitLayer(menu_rect, color=(255, 255, 0, 255))
+    status_layer = SplitLayer(status_rect, color=(255, 0, 255, 255))
     
     scene = Scene()
     scene.add(main_layer, z=0)

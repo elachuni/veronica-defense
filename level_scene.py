@@ -14,6 +14,7 @@ from sprites import WorldSprite, TowerSprite, CommonTowerSprite, \
      HqSprite, all_sprites, InfoSprite
 
 from split_layer import SplitLayer, split_horizontal, split_vertical
+from cocos.rect import Rect
 
 import settings
 
@@ -73,8 +74,8 @@ class WorldLayer(SplitLayer):
     """
     the objects in the world
     """
-    def __init__(self, split_data, world):
-        super(WorldLayer, self).__init__(split_data)
+    def __init__(self, split_rect, world):
+        super(WorldLayer, self).__init__(split_rect)
         
         self.world = world
         world.add_listener(self)
@@ -129,8 +130,8 @@ class InfoLayer(SplitLayer):
     """
     information on screen
     """
-    def __init__(self, split_data):
-        super(InfoLayer, self).__init__(split_data, color=(0, 0, 0, 200))
+    def __init__(self, split_rect):
+        super(InfoLayer, self).__init__(split_rect, color=(0, 0, 0, 200))
 
     def setup(self, hq, resources):
         info_sprite = InfoSprite(hq, resources)
@@ -147,19 +148,22 @@ class LevelScene(Scene):
         # split the window in three areas:
         #  world, hud, and info
         
-        window_split = {'position': (0, 0), 'size': settings.WINDOW_SIZE}
-        
-        split = settings.WINDOW_SIZE[0] * 3/4
-        world_split, rest_split = split_horizontal(window_split, split)
-        
-        split = settings.INFO_HEIGHT
-        info_split, hud_split = split_vertical(rest_split, split)
+        window_rect = Rect(0, 0, *settings.WINDOW_SIZE)
+
+        # the world area covers 3/4 of the window horizontally
+        distance = settings.WINDOW_SIZE[0] * 3/4
+        world_rect, rest_rect = split_horizontal(window_rect, distance)
+
+        # the info and the hud covers the rest of the window, splitted
+        # vertically:
+        distance = settings.INFO_HEIGHT
+        info_rect, hud_rect = split_vertical(rest_rect, distance)
         
         bg_layer = BackgroundLayer()
         
-        world_layer = WorldLayer(world_split, level.world)
-        hud_layer = SplitLayer(hud_split, color=(0, 0, 0, 100)) # TODO
-        info_layer = InfoLayer(info_split)
+        world_layer = WorldLayer(world_rect, level.world)
+        hud_layer = SplitLayer(hud_rect, color=(0, 0, 0, 100)) # TODO
+        info_layer = InfoLayer(info_rect)
         
         control_layer = ControlLayer(level)
         
