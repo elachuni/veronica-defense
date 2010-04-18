@@ -216,6 +216,7 @@ class TowerSprite(WorldSprite):
         when the tower shoots, add a shot sprite
         """
         shot_sprite = Sprite('shot.png')
+        shot_sprite.scale = 0.5
         self.shots_layer.add(shot_sprite, z=30)
         
         ang_radians = math.radians(tower.angle)
