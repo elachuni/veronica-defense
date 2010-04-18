@@ -168,7 +168,7 @@ class World(Notifier):
         self.grid.remove(world_obj)
         world_obj.leave_world()
     
-    def update(self):
+    def update(self, dt):
         for tower in self.towers:
             tower.update()
     
@@ -425,8 +425,10 @@ class ResourceManager(object):
 solid_classes = [Tower]
 
 
-class Level(object):
+class Level(Notifier):
     def __init__(self, world, level_data):
+        super(Level, self).__init__()
+        
         self.world = world
         self.level_data = level_data
     
@@ -466,8 +468,9 @@ class Level(object):
         self.world.add(world_obj, grid_pos)
         if isinstance(world_obj, Enemy):
             world_obj.start_move()
-    
-    def spawn_enemy(self):
+
+    @notify
+    def spawn_enemy(self, dt):
         enemy_class, num = self.enemies_to_spawn[0]
         num -= 1
         if num == 0:
