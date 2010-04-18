@@ -148,9 +148,6 @@ class LevelScene(Scene):
         
         info_layer.setup(level.world.hq, level.resources)
     
-    def on_level_finished(self, level, *args):
-        """
-        what to do when the level is finished
-        """
+    def on_stop_spawning(self, level, *args):
         self.unschedule(level.spawn_enemy)
         
