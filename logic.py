@@ -8,6 +8,7 @@ import math
 import time
 import random
 
+import settings
 from notifier import Notifier, notify
 from utils import angle_difference
 
@@ -395,7 +396,7 @@ class Hq(WorldObject):
         self._energy -= damage
 
 
-class ResourceManager(object):
+class ResourceManager(Notifier):
     """
     the resources that the player has.
     """
@@ -406,6 +407,7 @@ class ResourceManager(object):
         'huge buy': 5000,
     }
     def __init__(self, initial_resources):
+        super(ResourceManager, self).__init__()
         self._resources = initial_resources
     
     def can_be_done(self, operation):
@@ -414,7 +416,8 @@ class ResourceManager(object):
         """
         res = self.resources_for_operation[operation]
         return self._resources - res > 0
-    
+
+    @notify
     def operate(self, operation):
         assert(self.can_be_done(operation))
         res = self.resources_for_operation[operation]
@@ -426,10 +429,11 @@ solid_classes = [Tower]
 
 
 class Level(Notifier):
-    def __init__(self, world, level_data):
+    def __init__(self, level_data):
         super(Level, self).__init__()
         
-        self.world = world
+        self.world = World(grid_size=settings.GRID_SIZE)
+        self.resources = ResourceManager(1000)
         self.level_data = level_data
     
     def start(self):
