@@ -282,16 +282,33 @@ all_sprites = [CommonTowerSprite, HardTowerSprite,
                HqSprite, WorldSprite]
 
 
-class ResourcesSprite(CocosNode):
-    def __init__(self, resources):
-        super(ResourcesSprite, self).__init__()
+class InfoSprite(CocosNode):
+    def __init__(self, hq, resources):
+        super(InfoSprite, self).__init__()
+        hq.add_listener(self)
         resources.add_listener(self)
+
+        # label to display hq lives:
+        self.lives_label = Label("", font_size=20,
+                                     color=(200,200,200,255))
+        self.lives_label.position = 10, 35
+        self.add(self.lives_label)
         
-        self.counter = Label("", font_size=20, color=(200,200,200,255))
-        self.counter.position = 10, 10
-        self.add(self.counter)
+        # label to display resources:
+        self.resources_label = Label("", font_size=20,
+                                     color=(200,200,200,255))
+        self.resources_label.position = 10, 10
+        self.add(self.resources_label)
         
+        self.on_loose_energy(hq)
         self.on_operate(resources)
     
+    def on_loose_energy(self, hq, *args):
+        self.lives_label.element.text = \
+            "vidas: %s" % hq._energy
+    
     def on_operate(self, resources, *args):
-        self.counter.element.text = "recursos: %s" % resources._resources
+        self.resources_label.element.text = \
+            "recursos: %s" % resources._resources
+
+        
