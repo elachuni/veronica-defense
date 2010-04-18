@@ -391,7 +391,8 @@ class Hq(WorldObject):
     def __init__(self):
         super(Hq, self).__init__()
         self._energy = self.initial_energy
-    
+
+    @notify
     def loose_energy(self, damage):
         self._energy -= damage
 

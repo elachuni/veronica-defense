@@ -11,7 +11,7 @@ from pyglet.window import mouse, key
 from veronica_logic import Tower
 from sprites import WorldSprite, TowerSprite, CommonTowerSprite, \
      HardTowerSprite, EnemySprite, CommonEnemySprite, FastEnemySprite, \
-     HqSprite, all_sprites, ResourcesSprite
+     HqSprite, all_sprites, InfoSprite
 
 import settings
 
@@ -122,10 +122,12 @@ class InfoLayer(Layer):
     """
     information on screen
     """
-    def __init__(self, resources):
+    def __init__(self):
         super(InfoLayer, self).__init__()
-        resources_sprite = ResourcesSprite(resources)
-        self.add(resources_sprite)
+
+    def setup(self, hq, resources):
+        info_sprite = InfoSprite(hq, resources)
+        self.add(info_sprite)
 
 
 class LevelScene(Scene):
@@ -135,7 +137,7 @@ class LevelScene(Scene):
         
         bg_layer = BackgroundLayer()
         world_layer = WorldLayer(level.world)
-        info_layer = InfoLayer(level.resources)
+        info_layer = InfoLayer()
 
         self.add(bg_layer, z=0)
         self.add(world_layer, z=1)
@@ -143,6 +145,8 @@ class LevelScene(Scene):
         
         self.schedule_interval(level.spawn_enemy, settings.SPAWN_SECS)
         level.start()
+        
+        info_layer.setup(level.world.hq, level.resources)
     
     def on_level_finished(self, level, *args):
         """
