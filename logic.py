@@ -488,7 +488,7 @@ class Level(Notifier):
         else:
             self.enemies_to_spawn[0] = enemy_class, num
         
-        pos = (10 + random.randint(-8, 8), 0)
+        pos = (random.randint(0, settings.GRID_SIZE[0]-1), 0)
         self.add_world_object(enemy_class, pos)
     
     @notify
