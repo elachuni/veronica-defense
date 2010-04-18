@@ -6,6 +6,7 @@ general tower defense logic
 
 import math
 import time
+import random
 
 from notifier import Notifier, notify
 from utils import angle_difference
@@ -128,11 +129,15 @@ class Grid(object):
         self.add(world_object, new_pos)
 
 
-class World():
+class World(Notifier):
     """
     the world where the battle occurs.
+
+    it notifies changes so the GUI can be updated.
     """
     def __init__(self, grid_size):
+        super(World, self).__init__()
+        
         self.grid = Grid(grid_size)
         
         self.towers = set()
@@ -141,10 +146,7 @@ class World():
         self.hq = None
         self.active_tower = None
     
-    def move_enemies(self):
-        for enemy in self.enemies:
-            enemy.start_move()
-    
+    @notify
     def add(self, world_obj, grid_pos):
         if isinstance(world_obj, Tower):
             self.towers.add(world_obj)
@@ -156,6 +158,7 @@ class World():
         self.grid.add(world_obj, grid_pos)
         world_obj.enter_world(self)
     
+    @notify
     def remove(self, world_obj):
         if isinstance(world_obj, Tower):
             self.towers.remove(world_obj)
@@ -220,7 +223,6 @@ class WorldObject(Notifier):
         # the position of the object's top left corner in the grid
         self.grid_pos = None
     
-    @notify
     def enter_world(self, world):
         self.world = world
 
@@ -277,7 +279,7 @@ class Tower(WorldObject):
     def shoot(self):
         # TODO: only to test!
         self.target_enemy.get_hurt(1)
-            
+        
         self.last_shot = time.time()
     
     @notify
@@ -341,10 +343,6 @@ class Enemy(WorldObject):
         # directions to move:
         self.direction = self.initial_direction
         self.next_direction = None
-    
-    def enter_world(self, world):
-        super(Enemy, self).enter_world(world)
-        self.start_move()
     
     @notify
     def start_move(self):
@@ -425,6 +423,60 @@ class ResourceManager(object):
 
 # solid world classes:
 solid_classes = [Tower]
+
+
+class Level(object):
+    def __init__(self, world, level_data):
+        self.world = world
+        self.level_data = level_data
+    
+    def start(self):
+        """
+        add the initial objects to the world
+        """
+        level_data = self.level_data
+        
+        # test world object:
+        grid_pos = (7, 5)
+        self.add_world_object(WorldObject, grid_pos)
+        
+        # the hq:
+        grid_pos = (10, 14)
+        self.add_world_object(Hq, grid_pos)
+        
+        # some towers:
+        for tower_class, positions in level_data['initial towers'].items():
+            for pos in positions:
+                self.add_world_object(tower_class, pos)
+        
+        # some enemies:
+        self.enemies_to_spawn = []
+        for enemy_class, number in level_data['enemies'].items():
+            self.enemies_to_spawn.append((enemy_class, number))
+        self.enemies_to_spawn.reverse()
+        
+        self.world.calculate_paths()
+    
+    def add_world_object(self, world_object_class, grid_pos,
+                         *args, **kwargs):
+        """
+        create a world object and add it to the world
+        """
+        world_obj = world_object_class()
+        self.world.add(world_obj, grid_pos)
+        if isinstance(world_obj, Enemy):
+            world_obj.start_move()
+    
+    def spawn_enemy(self):
+        enemy_class, num = self.enemies_to_spawn[0]
+        num -= 1
+        if num == 0:
+            self.enemies_to_spawn.pop(0)
+        else:
+            self.enemies_to_spawn[0] = enemy_class, num
+        
+        pos = (10 + random.randint(-8, 8), 0)
+        self.add_world_object(enemy_class, pos)
 
 
 def test():

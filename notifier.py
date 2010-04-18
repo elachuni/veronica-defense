@@ -23,8 +23,8 @@ class Notifier(object):
     ...
 
     >>> class TowerSprite(object):
-    ...    def on_move(self, tower):
-    ...        print '%s moved to' % tower.name, tower.pos
+    ...    def on_move(self, tower, pos):
+    ...        print '%s moved to' % tower.name, pos
     ...
     ...    def on_reset(self, tower):
     ...        print '%s resetted' % tower.name
@@ -49,11 +49,11 @@ class Notifier(object):
     def remove_listener(self, listener):
         self.listeners.remove(listener)
     
-    def notify(self, event_name):
+    def notify(self, event_name, *args, **kwargs):
         for listener in self.listeners:
             callback = getattr(listener, 'on_' + event_name, None)
             if callback is not None:
-                callback(self)
+                callback(self, *args, **kwargs)
 
 
 def notify(func):
@@ -62,7 +62,7 @@ def notify(func):
     """
     def inner(notifier, *args, **kwargs):
         func(notifier, *args, **kwargs)
-        notifier.notify(func.__name__)
+        notifier.notify(func.__name__, *args, **kwargs)
     return inner
 
 
