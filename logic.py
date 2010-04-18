@@ -363,7 +363,7 @@ class Enemy(WorldObject):
         self.world.grid.move(self, new_pos)
         
         if self.grid_pos == self.world.hq.grid_pos:
-            self.success()
+            self.enemy_success()
         else:
             self.start_move()
     
@@ -374,7 +374,7 @@ class Enemy(WorldObject):
             self.die()
     
     @notify
-    def success(self):
+    def enemy_success(self):
         self.world.remove(self)
     
     @notify
@@ -390,11 +390,11 @@ class Hq(WorldObject):
     
     def __init__(self):
         super(Hq, self).__init__()
-        self._energy = self.initial_energy
-
+        self.energy = self.initial_energy
+    
     @notify
     def loose_energy(self, damage):
-        self._energy -= damage
+        self.energy -= damage
 
 
 class ResourceManager(Notifier):
@@ -409,20 +409,20 @@ class ResourceManager(Notifier):
     }
     def __init__(self, initial_resources):
         super(ResourceManager, self).__init__()
-        self._resources = initial_resources
+        self.resources = initial_resources
     
     def can_be_done(self, operation):
         """
         True if operation can be done
         """
         res = self.resources_for_operation[operation]
-        return self._resources - res > 0
+        return self.resources - res > 0
 
     @notify
     def operate(self, operation):
         assert(self.can_be_done(operation))
         res = self.resources_for_operation[operation]
-        self._resources -= res
+        self.resources -= res
 
 
 # solid world classes:
@@ -473,6 +473,7 @@ class Level(Notifier):
         create a world object and add it to the world
         """
         world_obj = world_object_class()
+        world_obj.add_listener(self)
         self.world.add(world_obj, grid_pos)
         if isinstance(world_obj, Enemy):
             world_obj.start_move()
@@ -483,16 +484,21 @@ class Level(Notifier):
         if num == 0:
             self.enemies_to_spawn.pop(0)
             if len(self.enemies_to_spawn) == 0:
-                self.level_finished()
+                self.stop_spawning()
         else:
             self.enemies_to_spawn[0] = enemy_class, num
         
         pos = (10 + random.randint(-8, 8), 0)
         self.add_world_object(enemy_class, pos)
-
+    
+    def on_enemy_success(self, enemy):
+        self.world.hq.loose_energy(10)
+        if self.world.hq.energy < 0:
+            print "you loose"
+    
     @notify
-    def level_finished(self):
-        print "you win!"
+    def stop_spawning(self):
+        pass
 
 
 def test():
@@ -531,7 +537,7 @@ def test():
     >>> print world.grid.can_fit_at(Tower, pos)
     False
     
-    >>> print resource_manager._resources
+    >>> print resource_manager.resources
     30
     
     >>> print resource_manager.can_be_done('add tower')
@@ -545,13 +551,13 @@ def test():
     >>> print world.grid.is_empty_at((6, 6))
     True
 
-    >>> print resource_manager._resources
+    >>> print resource_manager.resources
     60
 
     >>> world.add(tower, pos)
     >>> resource_manager.operate('add tower')
     
-    >>> print resource_manager._resources
+    >>> print resource_manager.resources
     10
     
     """

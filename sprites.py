@@ -157,7 +157,7 @@ class EnemySprite(WorldSprite):
         self.do(RotateBy(360, 0.5) * 3 + CallFunc(self.remove_me))
         self.body.do(FadeTo(20, 1.5))
     
-    def on_success(self, enemy):
+    def on_enemy_success(self, enemy):
         self.stop()
         self.remove(self.lifebar)
         
@@ -305,10 +305,10 @@ class InfoSprite(CocosNode):
     
     def on_loose_energy(self, hq, *args):
         self.lives_label.element.text = \
-            "vidas: %s" % hq._energy
+            "vida: %s" % hq.energy
     
     def on_operate(self, resources, *args):
         self.resources_label.element.text = \
-            "recursos: %s" % resources._resources
+            "recursos: %s" % resources.resources
 
         
