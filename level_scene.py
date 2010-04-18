@@ -144,10 +144,9 @@ class LevelScene(Scene):
         self.schedule_interval(level.spawn_enemy, settings.SPAWN_SECS)
         level.start()
     
-    def on_spawn_enemy(self, level, *args):
+    def on_level_finished(self, level, *args):
         """
-        if there are no more enemies, stop the spawning
+        what to do when the level is finished
         """
-        if len(level.enemies_to_spawn) == 0:
-            self.unschedule(level.spawn_enemy)
+        self.unschedule(level.spawn_enemy)
         
