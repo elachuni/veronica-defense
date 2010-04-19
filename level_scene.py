@@ -19,7 +19,7 @@ from cocos.rect import Rect
 import settings
 
 
-# which sprite represents which world object
+# which sprite represents which world object:
 sprite_per_object = {}
 for sprite in all_sprites:
     sprite_per_object[sprite.world_object_class] = sprite
