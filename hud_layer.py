@@ -123,9 +123,13 @@ class TowerCreationLayer(Layer):
     def on_mouse_press (self, x, y, buttons, modifiers):
         if buttons == pyglet.window.mouse.LEFT:
             grid_pos = get_cell_from_point(self.draging[0], self.draging[1])
+            
+            is_out = self.menu.level.world.grid.is_out_at(self.tower_class,
+                                                          grid_pos)
+            
             can_fit = self.menu.level.world.grid.can_fit_at(self.tower_class,
                                                             grid_pos)
-            if can_fit:
+            if not is_out and can_fit:
                 self.menu.level.add_tower(self.tower_class, grid_pos)
                 self.menu.end_drag()
 
