@@ -67,7 +67,7 @@ class WorldSprite(CocosNode):
             self.add(self.sprite, z=10)
         except ResourceNotFoundException:
             pass
-
+        
         # place the sprite in the location given by the grid.
         x, y = world_obj.grid_pos
         width, height = world_obj.size
