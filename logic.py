@@ -384,14 +384,14 @@ class Enemy(WorldObject):
     def get_hurt(self, damage):
         self.lives -= damage
         if self.lives == 0:
-            self.die()
+            self.enemy_die()
     
     @notify
     def enemy_success(self):
         self.world.remove(self)
     
     @notify
-    def die(self):
+    def enemy_die(self):
         self.world.remove(self)
 
 
@@ -447,7 +447,11 @@ solid_classes = [Tower, Rock]
 
 class Level(Notifier):
     """
-    control the objects in the world
+    control the status through the level, managing the user
+    interaction.
+    
+    for example, when the user adds a tower, the level reduces the
+    resources, creates the tower object, and adds it to the world.
     """
     def __init__(self, level_data):
         super(Level, self).__init__()
@@ -458,19 +462,23 @@ class Level(Notifier):
     
     def start(self):
         """
-        add the initial objects to the world
+        initialize the level:
+        
+        * add initial towers to the world
+        * setup the enemies to be spawned through the level
+        * place the hq
+        
         """
         level_data = self.level_data
         
         # test world object:
         grid_pos = (7, 5)
         self.add_world_object(WorldObject, grid_pos)
-
+        
         # some rocks:
         for i in range(8) + range(10, settings.GRID_SIZE[0]):
             grid_pos = (i, 1)
             self.add_world_object(Rock, grid_pos)
-        
         
         # the hq:
         grid_pos = (10, 14)
@@ -520,8 +528,17 @@ class Level(Notifier):
     def on_enemy_success(self, enemy):
         self.world.hq.loose_energy(10)
         if self.world.hq.energy < 0:
-            print "you loose"
-
+            self.done(user_success=False)
+    
+    def on_enemy_die(self, enemy):
+        """
+        check user success
+        """
+        # is this the last enemie?
+        if len(self.enemies_to_spawn) == 0 and \
+                len(self.world.enemies) == 1:
+            self.done(user_success=True)
+    
     def add_tower(self, tower_class, grid_pos):
         """
         the user adds a tower, by the gui
@@ -541,7 +558,14 @@ class Level(Notifier):
         self.world.remove(tower)
         
         self.world.calculate_paths()
-
+    
+    @notify
+    def done(self, user_success):
+        if user_success:
+            print "you win!"
+        else:
+            print "you loose :("
+    
 
 def test():
     """
