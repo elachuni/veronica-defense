@@ -150,7 +150,7 @@ class EnemySprite(WorldSprite):
         
         self.do(Delay(0.1) + CallFunc(restore_color))
     
-    def on_die(self, enemy):
+    def on_enemy_die(self, enemy):
         self.stop()
         self.remove(self.lifebar)
         
