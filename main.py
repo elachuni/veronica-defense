@@ -12,7 +12,7 @@ def main():
     pyglet.resource.path.append("images")
     pyglet.resource.reindex()
     
-    director.init(vsync=True)
+    director.init()
     
     # store window size in settings:
     settings.WINDOW_SIZE = director.get_window_size()

@@ -513,12 +513,25 @@ class Level(Notifier):
         if self.world.hq.energy < 0:
             print "you loose"
 
+    def add_tower(self, tower_class, grid_pos):
+        """
+        the user adds a tower, by the gui
+        """
+        assert issubclass(tower_class, Tower)
+        
+        self.resources.operate('add tower')
+        self.add_world_object(tower_class, grid_pos)
+        
+        self.world.calculate_paths()
+    
     def remove_tower(self, tower):
         """
         the user removes a tower from the world
         """
-        self.world.remove(tower)
         self.resources.operate('remove tower')
+        self.world.remove(tower)
+        
+        self.world.calculate_paths()
 
 
 def test():

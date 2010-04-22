@@ -14,8 +14,10 @@ from sprites import WorldSprite, TowerSprite, CommonTowerSprite, \
      HqSprite, all_sprites, InfoSprite
 
 from split_layer import SplitLayer, split_horizontal, split_vertical
+from hud_layer import HudLayer
 from cocos.rect import Rect
 
+from utils import get_cell_from_point
 import settings
 
 
@@ -25,11 +27,6 @@ for sprite in all_sprites:
     sprite_per_object[sprite.world_object_class] = sprite
 
 
-def get_cell_from_point(x, y):
-    """
-    return the grid cell at the given point
-    """
-    return int(x / settings.GRID_CELL), int(y / settings.GRID_CELL)
 
 
 class BackgroundLayer(ColorLayer):
@@ -53,7 +50,8 @@ class ControlLayer(Layer):
         self.level = level
     
     def on_mouse_press(self, x, y, buttons, modifiers):
-        grid_cell = get_cell_from_point(x, y)
+        vx, vy = director.get_virtual_coordinates(x,y)
+        grid_cell = get_cell_from_point(vx, vy)
         
         if buttons == mouse.RIGHT:
             world_obj = self.level.world.grid.get_at(grid_cell)
@@ -162,8 +160,10 @@ class LevelScene(Scene):
         bg_layer = BackgroundLayer()
         
         world_layer = WorldLayer(world_rect, level.world)
-        hud_layer = SplitLayer(hud_rect, color=(0, 0, 0, 100)) # TODO
+        hud_layer = SplitLayer(hud_rect, color=(0, 0, 0, 100))
         info_layer = InfoLayer(info_rect)
+        
+        hud_layer.add(HudLayer(level))
         
         control_layer = ControlLayer(level)
         
