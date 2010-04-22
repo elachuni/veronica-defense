@@ -60,11 +60,20 @@ class Grid(object):
     
     def get_solid_cells(self):
         return self.solids.keys()
+
+    def is_out_at(self, world_object_class, grid_pos):
+        """
+        True if a world object of the given class is outside if it
+        were to be positioned at grid_pos.
+        """
+        wo_class_size = world_object_class.size
+        return grid_pos[0] + wo_class_size[0] > self.size[0] or \
+               grid_pos[1] + wo_class_size[1] > self.size[1]
     
     def can_fit_at(self, world_object_class, grid_pos):
         """
-        True if a world object of class world_object_class can fit at the
-        given grid position
+        True if a world object of the given class can fit at the given
+        grid position
         """
         for x in range(world_object_class.size[0]):
             for y in range(world_object_class.size[1]):

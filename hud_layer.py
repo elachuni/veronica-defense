@@ -14,7 +14,7 @@ from cocos.menu import Menu, ImageMenuItem, LEFT, CENTER, \
 from veronica_logic import CommonTower, HardTower
 
 from utils import get_cell_from_point
-from settings import GRID_CELL
+from settings import GRID_CELL, GRID_SIZE
 
 # FIXME silly images until we get some graphics:
 images_for_sprites = {
@@ -64,7 +64,6 @@ class HudLayer(Menu):
         self.get_ancestor(Scene).add(self.drag_object, z=10)
         self.selected = tower_class        
     
-    # TODO mouse_x, mouse_y why calculate here?
     def on_mouse_motion(self, x, y, dx, dy):
         Menu.on_mouse_motion(self, x, y, dx, dy)
         self.mouse_x, self.mouse_y = director.get_virtual_coordinates(x,y)
@@ -102,7 +101,15 @@ class TowerCreationLayer(Layer):
     def on_mouse_motion(self, x, y, dx, dy):
         self.draging = director.get_virtual_coordinates(x,y)
         grid_pos = get_cell_from_point(self.draging[0], self.draging[1])
-        # TODO this is ugly
+        
+        # TODO this call is ugly, so loong:
+        is_out = self.menu.level.world.grid.is_out_at(self.tower_class, grid_pos)
+        if is_out:
+            self.rect_layer.visible = False
+        else:
+            self.rect_layer.visible = True
+        
+        # TODO this call is ugly, so loong:
         can_fit = self.menu.level.world.grid.can_fit_at(self.tower_class, grid_pos)
         self.rect_layer.position = (grid_pos[0]*GRID_CELL,
                                     grid_pos[1]*GRID_CELL)
