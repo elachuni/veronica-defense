@@ -442,9 +442,6 @@ class ResourceManager(Notifier):
         self.resources -= res
 
 
-
-
-
 # solid world classes:
 solid_classes = [Tower, Rock]
 
@@ -474,10 +471,6 @@ class Level(Notifier):
         
         """
         level_data = self.level_data
-        
-        # test world object:
-        grid_pos = (7, 5)
-        self.add_world_object(WorldObject, grid_pos)
         
         # some rocks:
         for i in range(8) + range(10, settings.GRID_SIZE[0]):
