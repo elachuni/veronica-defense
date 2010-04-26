@@ -137,8 +137,10 @@ class InfoLayer(SplitLayer):
 
 
 class LevelScene(Scene):
-    def __init__(self, level):
+    def __init__(self, level, level_selector):
         super(LevelScene, self).__init__()
+        
+        self.level_selector = level_selector
         
         # the scene will listen to the level:
         level.add_listener(self)
@@ -180,4 +182,13 @@ class LevelScene(Scene):
     
     def on_stop_spawning(self, level, *args):
         self.unschedule(level.spawn_enemy)
-
+    
+    def on_done(self, level, user_success):
+        """
+        when this level is done, return to the level selector
+        """
+        if user_success:
+            self.level_selector.next()
+        else:
+            self.level_selector.game_over(user_success)
+        
