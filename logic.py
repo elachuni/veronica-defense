@@ -565,10 +565,7 @@ class Level(Notifier):
     
     @notify
     def done(self, user_success):
-        if user_success:
-            print "you win!"
-        else:
-            print "you loose :("
+        pass
     
 
 def test():

@@ -2,11 +2,44 @@
 
 import pyglet.resource
 from cocos.director import director
+from cocos.scenes import FadeTransition
 
 import settings
 from logic import Level
 from levels_data import levels_data
 from level_scene import LevelScene
+
+class LevelSelector(object):
+    def __init__(self, levels_data):
+        self.levels_data = levels_data
+        self.current_scene = None
+    
+    def next(self):
+        """
+        display the next level
+        """
+        if len(self.levels_data) == 0:
+            self.game_over(user_success=True)
+            return
+        
+        level_data = self.levels_data.pop(0)
+        level = Level(level_data)
+    
+        # the level is shown as a cocos scene:
+        new_scene = LevelScene(level, self)
+        if self.current_scene is not None:
+            self.current_scene = new_scene
+            director.replace(FadeTransition(new_scene, duration=2))
+        else:
+            self.current_scene = new_scene
+            director.run(new_scene)
+    
+    def game_over(self, user_success):
+        if user_success == True:
+            print "you win the game :)"
+        else:
+            print "you loose :("
+
 
 def main():
     pyglet.resource.path.append("images")
@@ -16,14 +49,9 @@ def main():
     
     # store window size in settings:
     settings.WINDOW_SIZE = director.get_window_size()
-    
-    # just a test level for now:
-    level_data = levels_data[0]
-    level = Level(level_data)
-    
-    # the level is shown as a cocos scene:
-    level_scene = LevelScene(level)
-    director.run(level_scene)
+
+    level_sel = LevelSelector(levels_data)
+    level_sel.next()
 
 
 if __name__ == '__main__':
