@@ -388,10 +388,14 @@ class Enemy(WorldObject):
     
     @notify
     def enemy_success(self):
-        self.world.remove(self)
+        self.enemy_remove()
     
     @notify
     def enemy_die(self):
+        self.enemy_remove()
+    
+    @notify
+    def enemy_remove(self):
         self.world.remove(self)
 
 
@@ -534,9 +538,9 @@ class Level(Notifier):
         """
         check user success
         """
-        # is this the last enemie?
+        # was this the last enemie?
         if len(self.enemies_to_spawn) == 0 and \
-                len(self.world.enemies) == 1:
+                len(self.world.enemies) == 0:
             self.done(user_success=True)
     
     def add_tower(self, tower_class, grid_pos):
