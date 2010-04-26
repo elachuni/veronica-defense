@@ -1,6 +1,18 @@
 
-veronica-defense
-----------------
+Veronica Defense
+================
+
+Controls
+--------
+
+ * right click on a tower in the grid to select it
+ * left click on tower in the grid to sell it
+ 
+ * click on a tower in the sidebar to start dragging, then click in
+   the grid to add it
+
+Brainstorming del PyCamp
+------------------------
 
 * con grilla
 
