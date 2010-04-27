@@ -418,7 +418,7 @@ class ResourceManager(Notifier):
     """
     the resources that the player has.
     """
-    # operation > resources obtained (or left if negative)
+    # operation -> resources obtained (or left if negative)
     resources_for_operation = {
         'add tower': Tower.resources_to_add,
         'remove tower': Tower.resources_to_remove,
@@ -433,7 +433,7 @@ class ResourceManager(Notifier):
         True if operation can be done
         """
         res = self.resources_for_operation[operation]
-        return self.resources - res > 0
+        return self.resources - res >= 0
 
     @notify
     def operate(self, operation):
@@ -454,11 +454,25 @@ class Level(Notifier):
     for example, when the user adds a tower, the level reduces the
     resources, creates the tower object, and adds it to the world.
     """
-    def __init__(self, level_data):
+    def __init__(self, level_data, previous_resources=None):
+        """
+        
+        level_data: the data necessary to start the level
+        
+        previous_resources: the resources left in the previous level,
+        if any.
+        
+        """
         super(Level, self).__init__()
+
+        # add previous resources to the initial resources for this
+        # level, if any.
+        initial_resources = level_data['initial resources']
+        if previous_resources is not None:
+            initial_resources += previous_resources
         
         self.world = World(grid_size=settings.GRID_SIZE)
-        self.resources = ResourceManager(1000)
+        self.resources = ResourceManager(initial_resources)
         self.level_data = level_data
     
     def start(self):

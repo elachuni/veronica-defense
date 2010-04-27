@@ -14,7 +14,7 @@ class LevelSelector(object):
         self.levels_data = levels_data
         self.current_scene = None
     
-    def next(self):
+    def next(self, previous_resources=None):
         """
         display the next level
         """
@@ -23,7 +23,7 @@ class LevelSelector(object):
             return
         
         level_data = self.levels_data.pop(0)
-        level = Level(level_data)
+        level = Level(level_data, previous_resources)
     
         # the level is shown as a cocos scene:
         new_scene = LevelScene(level, self)
