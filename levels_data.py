@@ -6,19 +6,19 @@ levels_data = [
 
 {
  'enemies':
-    # olas de enemigos
+    # olas de enemigos:
     {
-     CommonEnemy: 12,
+     CommonEnemy: 20,
     },
  'initial towers':
     {
      CommonTower: [(10, 2), (10, 6)],
-    }
+    },
+ 'initial resources': 100,
  },
 
 {
  'enemies':
-    # olas de enemigos
     {
      CommonEnemy: 20,
      FastEnemy: 10,
@@ -27,7 +27,8 @@ levels_data = [
     {
      CommonTower: [(10, 2), (10, 6)],
      HardTower: [(10, 10)]
-    }
+    },
+ 'initial resources': 100,
  },
 
 ]

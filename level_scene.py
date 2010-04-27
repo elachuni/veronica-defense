@@ -188,7 +188,7 @@ class LevelScene(Scene):
         when this level is done, return to the level selector
         """
         if user_success:
-            self.level_selector.next()
+            self.level_selector.next(level.resources.resources)
         else:
             self.level_selector.game_over(user_success)
         
