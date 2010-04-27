@@ -539,22 +539,24 @@ class Level(Notifier):
     @notify
     def stop_spawning(self):
         pass
+
+    def _check_no_more_enemies(self):
+        if len(self.enemies_to_spawn) == 0 and \
+                len(self.world.enemies) == 0:
+            self.done(user_success=True)
     
     def on_enemy_success(self, enemy):
         self.world.hq.loose_energy(10)
         if self.world.hq.energy < 0:
             self.done(user_success=False)
+        self._check_no_more_enemies()
     
     def on_enemy_die(self, enemy):
         """
         a tower kills an enemy
         """
         self.resources.operate('kill enemy')
-        
-        # check user success, was this the last enemie?
-        if len(self.enemies_to_spawn) == 0 and \
-                len(self.world.enemies) == 0:
-            self.done(user_success=True)
+        self._check_no_more_enemies()
     
     def add_tower(self, tower_class, grid_pos):
         """
