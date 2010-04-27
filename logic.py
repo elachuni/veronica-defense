@@ -348,6 +348,9 @@ class Enemy(WorldObject):
 
     # how fast does the enemy move, in grid cells per seconds
     speed = 1.4
+
+    # how much is gained when the enemy gets killed
+    resources_to_kill = -5
     
     def __init__(self):
         super(Enemy, self).__init__()
@@ -421,6 +424,7 @@ class ResourceManager(Notifier):
     # operation -> resources obtained (or left if negative)
     resources_for_operation = {
         'add tower': Tower.resources_to_add,
+        'kill enemy': Enemy.resources_to_kill,
         'remove tower': Tower.resources_to_remove,
         'huge buy': 5000,
     }
@@ -543,9 +547,11 @@ class Level(Notifier):
     
     def on_enemy_die(self, enemy):
         """
-        check user success
+        a tower kills an enemy
         """
-        # was this the last enemie?
+        self.resources.operate('kill enemy')
+        
+        # check user success, was this the last enemie?
         if len(self.enemies_to_spawn) == 0 and \
                 len(self.world.enemies) == 0:
             self.done(user_success=True)
